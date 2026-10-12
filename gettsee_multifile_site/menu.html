@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GETSEE Full Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,400;0,700;0,800;1,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2026_royal_blue" />
+  <style>
+    /* Full Menu: Sticky Topbar with Dark Navy Background */
+    .topbar {
+      position: sticky !important;
+      top: 0 !important;
+      background: #00438D !important; /* Royal Blue Getsee */
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18) !important;
+      z-index: 100 !important;
+    }
+    .nav-links a {
+      color: #ffffff !important;
+      text-shadow: none !important;
+    }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #FFF006 !important;
+    }
+    .nav-links a::after {
+      background: #FFF006 !important;
+    }
+    .cart {
+      color: #ffffff !important;
+    }
+    .brand-logo img {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: skewX(-8deg);
+      transform-origin: left center;
+    }
+    .menu-page {
+      padding-top: 24px !important;
+    }
+    .menu-toolbar {
+      margin-bottom: 24px !important;
+    }
+  </style>
+</head>
+<body class="menu-page-view">
+  <div class="site-container">
+    <header class="topbar">
+      <nav class="nav">
+        <a class="brand" href="index.html" aria-label="Getsee home">
+          <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
+        </a>
+        <div class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Delivery</a>
+          <a class="active" href="menu.html">Get Fresh</a>
+          <a href="index.html#promo">Exclusive</a>
+          <a href="index.html#contact">Large Order</a>
+        </div>
+        <div class="actions">
+          <button class="cart" aria-label="Cart" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L22 6H6"></path>
+            </svg>
+            <span class="cart-count">0</span>
+          </button>
+          <a class="login-btn" href="login.html" aria-label="Login">Login</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="menu-page page">
+      <div class="menu-toolbar">
+        <a class="back-btn" href="index.html">← Back to Home</a>
+      </div>
+      <div class="full-layout">
+        <aside class="side-panel">
+          <h2>All Menu List</h2>
+          <div class="side-list" id="sideList"></div>
+        </aside>
+        <section class="full-panel" id="fullPanel" aria-live="polite"></section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/menu-data.js?v=2026_fullstack"></script>
+  <script src="js/menu-page.js?v=2026_fullstack"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GETSEE Menu Data Tests</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 24px; background: #ffffff; color: #071831; }
+    .pass { color: #04499D; font-weight: 800; }
+    .fail { color: #d32f2f; font-weight: 800; }
+    li { margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h1>GETSEE Menu Data Tests</h1>
+  <ol id="results"></ol>
+
+  <script src="../js/menu-data.js"></script>
+  <script>
+    const results = document.querySelector('#results');
+    function test(name, fn) {
+      const li = document.createElement('li');
+      try {
+        fn();
+        li.className = 'pass';
+        li.textContent = 'PASS: ' + name;
+      } catch (error) {
+        li.className = 'fail';
+        li.textContent = 'FAIL: ' + name + ' — ' + error.message;
+      }
+      results.appendChild(li);
+    }
+    function assert(condition, message) {
+      if (!condition) throw new Error(message);
+    }
+
+    test('Burger category opens with exactly two burger items', () => {
+      assert(window.menuData.burger.items.length === 2, 'Burger should contain two items');
+      assert(window.menuData.burger.items[0].name === 'Beef Burger', 'First burger item should be Beef Burger');
+    });
+
+    test('Right sidebar order contains Burger, Bagel, and Rice Section', () => {
+      assert(window.menuOrder.includes('burger'), 'menuOrder must include burger');
+      assert(window.menuOrder.includes('bagel'), 'menuOrder must include bagel');
+      assert(window.menuOrder.includes('rice'), 'menuOrder must include rice');
+    });
+
+    test('Invalid category falls back to Coffee Milk', () => {
+      assert(window.findMenuCategory('not-real') === 'coffee', 'Fallback should be coffee');
+    });
+
+    test('PDF menu categories from pages 1–9 are represented', () => {
+      ['coffee','espresso','top1','coldbrew','freshed','noncoffee','donuts','platter','wings','pasta','steak','burger','bagel','rice'].forEach(id => {
+        assert(Boolean(window.menuData[id]), id + ' should exist');
+      });
+    });
+  </script>
+</body>
+</html>

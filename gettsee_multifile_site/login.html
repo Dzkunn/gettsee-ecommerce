@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Getsee Coffee & Donuts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,400;0,700;0,800;1,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2026_royal_blue" />
+</head>
+<body>
+  <div class="site-container">
+    <header class="topbar">
+      <nav class="nav">
+        <a class="brand" href="index.html" aria-label="Getsee home">
+          <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
+        </a>
+        <div class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Delivery</a>
+          <a href="menu.html">Get Fresh</a>
+          <a href="index.html#promo">Exclusive</a>
+          <a href="index.html#contact">Large Order</a>
+        </div>
+        <div class="actions">
+          <button class="cart" aria-label="Cart" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L22 6H6"></path>
+            </svg>
+            <span class="cart-count">0</span>
+          </button>
+          <a class="login-btn active" href="login.html">Login</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="login-page page">
+      <div class="login-container">
+        <!-- Banner ramah jika pengguna diarahkan dari checkout -->
+        <aside class="checkout-notice-card" id="checkoutNotice" style="display: none;">
+          <div class="notice-icon-box">🛒</div>
+          <div class="notice-body">
+            <h3>Satu Langkah Lagi Menuju Checkout!</h3>
+            <p>Silakan masuk ke akun Anda, atau langsung lanjutkan pesanan kopi & donat sebagai <strong>Tamu (Tanpa Akun)</strong>.</p>
+          </div>
+          <button type="button" class="guest-action-btn" id="guestCheckoutBtn">
+            ⚡ Lanjut sebagai Tamu (Guest) →
+          </button>
+        </aside>
+
+        <section class="login-panel">
+          <!-- Sisi Kiri: Branding & Maskot -->
+          <div class="login-copy">
+            <div class="login-copy-content">
+              <span class="eyebrow">Getsee Coffee & Donuts</span>
+              <h1>Welcome Back!</h1>
+              <p>Nikmati pilihan kopi artisan, donat lembut spesial, serta kemudahan memesan menu favoritmu.</p>
+              
+              <ul class="login-perks">
+                <li><span class="perk-icon">☕</span> Promo bundling & reward khusus member</li>
+                <li><span class="perk-icon">🍩</span> Riwayat pesanan tersimpan rapi</li>
+                <li><span class="perk-icon">⚡</span> Checkout lebih cepat dalam satu klik</li>
+              </ul>
+            </div>
+            <img src="assets/stickers/mascot-coffee-hd.png" alt="Getsee Mascot" class="mascot-img" aria-hidden="true">
+          </div>
+
+          <!-- Sisi Kanan: Form Login / Register -->
+          <div class="login-form-wrapper">
+            <div class="auth-header">
+              <h2 id="formTitle">Masuk ke Akun</h2>
+              <p id="formSubtitle">Masukkan email dan password Anda untuk melanjutkan.</p>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="auth-tabs" role="tablist" aria-label="Mode login atau daftar">
+              <button class="active" type="button" id="tabLogin" data-auth-mode="login">Masuk</button>
+              <button type="button" id="tabRegister" data-auth-mode="register">Daftar Akun Baru</button>
+            </div>
+
+            <form class="login-form" action="#" method="post" id="authForm">
+              <!-- Field Nama (hanya saat Register) -->
+              <label class="register-only" hidden>
+                <span>Nama Lengkap</span>
+                <input type="text" name="name" placeholder="Masukkan nama Anda" autocomplete="name">
+              </label>
+
+              <!-- Field Email -->
+              <label>
+                <span>Alamat Email</span>
+                <input type="email" name="email" placeholder="nama@email.com" autocomplete="email" required>
+              </label>
+
+              <!-- Field Password -->
+              <label>
+                <span>Password</span>
+                <div class="password-field">
+                  <input type="password" name="password" id="passwordInput" placeholder="Masukkan password" autocomplete="current-password" required>
+                  <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Tampilkan password" title="Tampilkan/Sembunyikan password">
+                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </label>
+
+              <!-- Opsi Remember & Lupa Password -->
+              <div class="login-options">
+                <label class="check-row">
+                  <input type="checkbox" name="remember" checked> Ingat saya
+                </label>
+                <a href="#" id="forgotPasswordLink">Lupa password?</a>
+              </div>
+
+              <!-- Pesan Error / Notifikasi -->
+              <p class="auth-message" id="authMessage" aria-live="polite"></p>
+
+              <!-- Tombol Submit Utama -->
+              <button class="login-submit" type="submit" id="submitBtn">Masuk Sekarang</button>
+
+              <!-- Divider atau -->
+              <div class="auth-divider">
+                <span>atau cara cepat</span>
+              </div>
+
+              <!-- Tombol Demo Login 1-Klik -->
+              <button type="button" class="quick-demo-btn" id="quickDemoBtn">
+                ⚡ Masuk Cepat dengan Akun Demo (1-Klik)
+              </button>
+
+              <!-- Link Switcher Bawah -->
+              <p class="switch-auth-text" id="switchAuthText">
+                Belum punya akun? <a href="#" id="switchModeLink">Daftar sekarang</a>
+              </p>
+
+              <!-- Opsi Checkout sebagai Tamu -->
+              <p class="guest-link-row" id="guestLinkRow">
+                <a href="#" id="guestTextBtn">Mau langsung bayar tanpa akun? <strong>Lanjut sebagai Tamu →</strong></a>
+              </p>
+
+              <p class="signup-note">
+                Dengan melanjutkan, Anda menyetujui <a href="terms-of-service.html">Ketentuan Layanan</a> & <a href="privacy-policy.html">Kebijakan Privasi</a> Getsee.
+              </p>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/nav.js?v=2026_fullstack"></script>
+  <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/login.js?v=2026_fullstack"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | Getsee Coffee & Donuts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,400;0,700;0,800;1,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2026_royal_blue" />
+</head>
+<body>
+  <div class="site-container">
+    <header class="topbar">
+      <nav class="nav">
+        <a class="brand" href="index.html" aria-label="Getsee home">
+          <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
+        </a>
+        <div class="nav-links" aria-label="Main navigation">
+          <a href="index.html">Delivery</a>
+          <a href="menu.html">Get Fresh</a>
+          <a href="index.html#promo">Exclusive</a>
+          <a href="index.html#contact">Large Order</a>
+        </div>
+        <div class="actions">
+          <button class="cart" aria-label="Cart" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L22 6H6"></path>
+            </svg>
+            <span class="cart-count">0</span>
+          </button>
+          <a class="login-btn active" href="profile.html">Login</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="profile-page page">
+      <section class="profile-panel">
+        <div class="profile-copy">
+          <p class="eyebrow">Account</p>
+          <h1>Profile</h1>
+          <p>Keep your account details ready for faster checkout.</p>
+          <img src="assets/stickers/mascot-wave-hd.png" alt="" aria-hidden="true">
+        </div>
+        <form class="profile-form" id="profileForm" action="#" method="post">
+          <label>
+            Email
+            <input type="email" name="email" readonly>
+          </label>
+          <label>
+            Name
+            <input type="text" name="name" placeholder="Your name" autocomplete="name">
+          </label>
+          <label>
+            Birth Date
+            <input type="date" name="birthDate" autocomplete="bday">
+          </label>
+          <label>
+            Gender
+            <select name="gender">
+              <option value="">Select gender</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+          </label>
+          <p class="auth-message" id="profileMessage" aria-live="polite"></p>
+          <button class="login-submit" type="submit">Save Profile</button>
+          <button class="logout-btn" id="logoutButton" type="button">Logout</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/nav.js?v=2026_fullstack"></script>
+  <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/profile.js?v=2026_fullstack"></script>
+</body>
+</html>
