@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +17,7 @@
           <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
         </a>
         <div class="nav-links" aria-label="Main navigation">
-          <a href="index.html">Delivery</a>
+          <a href="index.html">Order Pickup</a>
           <a href="menu.html">Get Fresh</a>
           <a href="index.html#promo">Exclusive</a>
           <a href="index.html#contact">Large Order</a>
@@ -31,9 +31,15 @@
             </svg>
             <span class="cart-count">0</span>
           </button>
+          <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" type="button">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </button>
           <a class="login-btn active" href="profile.html">Login</a>
         </div>
       </nav>
+      <div class="nav-backdrop" id="navBackdrop"></div>
     </header>
 
     <main class="profile-page page">
@@ -41,8 +47,13 @@
         <div class="profile-copy">
           <p class="eyebrow">Account</p>
           <h1>Profile</h1>
-          <p>Keep your account details ready for faster checkout.</p>
+          <p>Kelola data akun dan lihat riwayat kode pengambilan pesanan (pickup).</p>
           <img src="assets/stickers/mascot-wave-hd.png" alt="" aria-hidden="true">
+
+          <div style="margin-top: 24px; text-align: left;">
+            <h3 style="font-size: 16px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: #00438D; margin-bottom: 12px;">Riwayat Pesanan (Pickup)</h3>
+            <div id="orderHistoryList"></div>
+          </div>
         </div>
         <form class="profile-form" id="profileForm" action="#" method="post">
           <label>
@@ -50,32 +61,32 @@
             <input type="email" name="email" readonly>
           </label>
           <label>
-            Name
-            <input type="text" name="name" placeholder="Your name" autocomplete="name">
+            Nama Lengkap
+            <input type="text" name="name" placeholder="Nama Anda" autocomplete="name">
           </label>
           <label>
-            Birth Date
+            Tanggal Lahir
             <input type="date" name="birthDate" autocomplete="bday">
           </label>
           <label>
-            Gender
+            Jenis Kelamin
             <select name="gender">
-              <option value="">Select gender</option>
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-              <option value="prefer-not-to-say">Prefer not to say</option>
+              <option value="">Pilih jenis kelamin</option>
+              <option value="female">Perempuan</option>
+              <option value="male">Laki-laki</option>
+              <option value="prefer-not-to-say">Memilih tidak menyebutkan</option>
             </select>
           </label>
           <p class="auth-message" id="profileMessage" aria-live="polite"></p>
-          <button class="login-submit" type="submit">Save Profile</button>
-          <button class="logout-btn" id="logoutButton" type="button">Logout</button>
+          <button class="login-submit" type="submit">Simpan Profil</button>
+          <button class="logout-btn" id="logoutButton" type="button">Keluar (Logout)</button>
         </form>
       </section>
     </main>
   </div>
 
-  <script src="js/nav.js?v=2026_fullstack"></script>
   <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/nav.js?v=2026_fullstack"></script>
   <script src="js/profile.js?v=2026_fullstack"></script>
 </body>
 </html>

@@ -160,9 +160,10 @@ async function registerUser(form) {
   if (!name) throw new Error('Mohon masukkan nama lengkap Anda.');
   if (password.length < 4) throw new Error('Password minimal 4 karakter.');
 
-  // Try calling Python backend REST API
+  // Try calling backend REST API
   try {
-    const res = await fetch('/api/auth/register', {
+    const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+    const res = await fetch(`${baseUrl}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
@@ -211,9 +212,10 @@ async function loginUser(form) {
   if (!email) throw new Error('Mohon masukkan alamat email.');
   if (!password) throw new Error('Mohon masukkan password.');
 
-  // Try calling Python backend REST API
+  // Try calling backend REST API
   try {
-    const res = await fetch('/api/auth/login', {
+    const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+    const res = await fetch(`${baseUrl}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, remember })

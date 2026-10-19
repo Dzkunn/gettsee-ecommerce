@@ -3,6 +3,7 @@
 window.getseeShop = (function createShop() {
   const cartKey = 'getseeCart';
   const authKey = 'getseeSession';
+  const guestKey = 'getseeGuest';
   const checkoutRedirectKey = 'getseeCheckoutRedirect';
   const drinkCategories = new Set(['coffee', 'espresso', 'top1', 'coldbrew', 'freshed', 'noncoffee']);
 
@@ -41,8 +42,17 @@ window.getseeShop = (function createShop() {
   function addItem(item) {
     ensureCartDrawer();
     const cart = getCart();
-    const key = [item.category, item.name, item.price].join('|');
+    
+    // Key accommodates customizations
+    const customSuffix = [
+      item.temp || '',
+      item.sugar || '',
+      item.notes ? encodeURIComponent(item.notes) : ''
+    ].filter(Boolean).join('|');
+
+    const key = [item.category, item.name, item.price, customSuffix].filter(Boolean).join('|');
     const existing = cart.find(cartItem => cartItem.key === key);
+    
     if (existing) {
       existing.qty += 1;
     } else {
@@ -53,6 +63,9 @@ window.getseeShop = (function createShop() {
         desc: item.desc || '',
         price: item.price || '',
         image: item.image || '',
+        temp: item.temp || '',
+        sugar: item.sugar || '',
+        notes: item.notes || '',
         value: parsePrice(item.price),
         qty: 1
       });
@@ -86,7 +99,24 @@ window.getseeShop = (function createShop() {
     }
   }
 
+  function isGuest() {
+    try {
+      return Boolean(JSON.parse(localStorage.getItem(guestKey)));
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setGuest(active = true) {
+    if (active) {
+      localStorage.setItem(guestKey, JSON.stringify({ guest: true, createdAt: Date.now() }));
+    } else {
+      localStorage.removeItem(guestKey);
+    }
+  }
+
   function login(email, remember) {
+    setGuest(false);
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
     const token = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
@@ -101,6 +131,7 @@ window.getseeShop = (function createShop() {
 
   function logout() {
     localStorage.removeItem(authKey);
+    setGuest(false);
     updateAuthButtons();
     renderCart();
   }
@@ -131,7 +162,7 @@ window.getseeShop = (function createShop() {
 
   function checkout() {
     if (getCart().length === 0) return;
-    if (!isLoggedIn()) {
+    if (!isLoggedIn() && !isGuest()) {
       closeCart();
       localStorage.setItem(checkoutRedirectKey, 'payment.html');
       window.location.href = 'login.html?redirect=payment.html';
@@ -168,11 +199,14 @@ window.getseeShop = (function createShop() {
     if (!list || !total || !checkoutButton) return;
 
     const cart = getCart();
-    list.innerHTML = cart.length ? cart.map(item => `
+    list.innerHTML = cart.length ? cart.map(item => {
+      const customBadge = [item.temp, item.sugar, item.notes ? `Catatan: ${item.notes}` : ''].filter(Boolean).join(' • ');
+      return `
       <article class="cart-line" style="display: grid; grid-template-columns: 50px 1fr auto; gap: 12px; align-items: center; border-bottom: 1px solid rgba(4, 73, 157, 0.08); padding-bottom: 12px;">
         <img src="${item.image || 'assets/logo.png'}" alt="${item.name}" style="width: 50px !important; height: 50px !important; min-width: 50px !important; max-width: 50px !important; aspect-ratio: 1/1 !important; object-fit: cover !important; border-radius: 12px !important; background: #f0f5fc !important; display: block !important;">
         <div>
           <strong style="display: block; font-size: 14px; color: #02224d; font-weight: 800;">${item.name}</strong>
+          ${customBadge ? `<span style="display: block; font-size: 11px; color: #607089; font-weight: 600; line-height: 1.3; margin: 2px 0;">${customBadge}</span>` : ''}
           <small style="color: #04499D; font-weight: 800; font-size: 12px;">${item.price || 'Custom order'}</small>
           <div class="qty-controls">
             <button type="button" data-cart-minus="${item.key}">-</button>
@@ -181,11 +215,11 @@ window.getseeShop = (function createShop() {
           </div>
         </div>
         <button class="cart-remove" type="button" data-cart-remove="${item.key}">x</button>
-      </article>
-    `).join('') : '<p class="cart-empty">Your cart is empty.</p>';
+      </article>`;
+    }).join('') : '<p class="cart-empty">Your cart is empty.</p>';
 
     total.textContent = formatRupiah(cartTotal());
-    checkoutButton.textContent = isLoggedIn() ? 'Checkout' : 'Login untuk Checkout';
+    checkoutButton.textContent = (isLoggedIn() || isGuest()) ? 'Checkout' : 'Pesan Sekarang';
     checkoutButton.disabled = cart.length === 0;
   }
 
@@ -252,6 +286,8 @@ window.getseeShop = (function createShop() {
     initCart,
     isDrinkCategory: category => drinkCategories.has(category),
     isLoggedIn,
+    isGuest,
+    setGuest,
     login,
     logout,
     parsePrice,

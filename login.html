@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,7 +17,7 @@
           <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
         </a>
         <div class="nav-links" aria-label="Main navigation">
-          <a href="index.html">Delivery</a>
+          <a href="index.html">Order Pickup</a>
           <a href="menu.html">Get Fresh</a>
           <a href="index.html#promo">Exclusive</a>
           <a href="index.html#contact">Large Order</a>
@@ -31,9 +31,15 @@
             </svg>
             <span class="cart-count">0</span>
           </button>
+          <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" type="button">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </button>
           <a class="login-btn active" href="login.html">Login</a>
         </div>
       </nav>
+      <div class="nav-backdrop" id="navBackdrop"></div>
     </header>
 
     <main class="login-page page">
@@ -64,58 +70,62 @@
                 <li><span class="perk-icon">⚡</span> Checkout lebih cepat dalam satu klik</li>
               </ul>
             </div>
+            
             <img src="assets/stickers/mascot-coffee-hd.png" alt="Getsee Mascot" class="mascot-img" aria-hidden="true">
           </div>
 
-          <!-- Sisi Kanan: Form Login / Register -->
+          <!-- Sisi Kanan: Form Login / Register Interaktif -->
           <div class="login-form-wrapper">
             <div class="auth-header">
               <h2 id="formTitle">Masuk ke Akun</h2>
               <p id="formSubtitle">Masukkan email dan password Anda untuk melanjutkan.</p>
             </div>
 
-            <!-- Tab Switcher -->
-            <div class="auth-tabs" role="tablist" aria-label="Mode login atau daftar">
-              <button class="active" type="button" id="tabLogin" data-auth-mode="login">Masuk</button>
-              <button type="button" id="tabRegister" data-auth-mode="register">Daftar Akun Baru</button>
+            <!-- Tab Switcher (Masuk vs Daftar Baru) -->
+            <div class="auth-tabs" role="tablist">
+              <button class="active" type="button" data-auth-mode="login" id="tabLogin" role="tab" aria-selected="true">Masuk</button>
+              <button type="button" data-auth-mode="register" id="tabRegister" role="tab" aria-selected="false">Daftar Akun Baru</button>
             </div>
 
-            <form class="login-form" action="#" method="post" id="authForm">
-              <!-- Field Nama (hanya saat Register) -->
-              <label class="register-only" hidden>
-                <span>Nama Lengkap</span>
-                <input type="text" name="name" placeholder="Masukkan nama Anda" autocomplete="name">
-              </label>
-
-              <!-- Field Email -->
-              <label>
-                <span>Alamat Email</span>
-                <input type="email" name="email" placeholder="nama@email.com" autocomplete="email" required>
-              </label>
-
-              <!-- Field Password -->
-              <label>
-                <span>Password</span>
-                <div class="password-field">
-                  <input type="password" name="password" id="passwordInput" placeholder="Masukkan password" autocomplete="current-password" required>
-                  <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Tampilkan password" title="Tampilkan/Sembunyikan password">
-                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                      <circle cx="12" cy="12" r="3"></circle>
-                    </svg>
-                  </button>
+            <form class="login-form" id="authForm" action="#" method="post" novalidate>
+              <!-- Field Nama Lengkap (Khusus Mode Daftar Baru) -->
+              <label class="form-group" id="nameGroup" style="display: none;">
+                <span class="label-text">Nama Lengkap</span>
+                <div class="input-wrapper">
+                  <span class="input-icon">👤</span>
+                  <input type="text" name="name" id="nameInput" placeholder="Contoh: Budi Santoso" autocomplete="name">
                 </div>
               </label>
 
-              <!-- Opsi Remember & Lupa Password -->
-              <div class="login-options">
-                <label class="check-row">
-                  <input type="checkbox" name="remember" checked> Ingat saya
+              <!-- Field Email -->
+              <label class="form-group">
+                <span class="label-text">Alamat Email</span>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉️</span>
+                  <input type="email" name="email" id="emailInput" placeholder="nama@email.com" autocomplete="email" required>
+                </div>
+              </label>
+
+              <!-- Field Password -->
+              <label class="form-group">
+                <span class="label-text">Password</span>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔒</span>
+                  <input type="password" name="password" id="passwordInput" placeholder="Minimal 4 karakter" autocomplete="current-password" required minlength="4">
+                  <button type="button" class="toggle-password-btn" id="togglePasswordBtn" aria-label="Lihat password">👁️</button>
+                </div>
+              </label>
+
+              <!-- Opsi Tambahan (Ingat Saya & Lupa Password) -->
+              <div class="form-options-row">
+                <label class="remember-checkbox">
+                  <input type="checkbox" name="remember" id="rememberMe" checked>
+                  <span>Ingat saya</span>
                 </label>
-                <a href="#" id="forgotPasswordLink">Lupa password?</a>
+                <a href="#" class="forgot-link" id="forgotPasswordLink">Lupa password?</a>
               </div>
 
-              <!-- Pesan Error / Notifikasi -->
+              <!-- Notifikasi Feedback -->
               <p class="auth-message" id="authMessage" aria-live="polite"></p>
 
               <!-- Tombol Submit Utama -->
@@ -142,7 +152,7 @@
               </p>
 
               <p class="signup-note">
-                Dengan melanjutkan, Anda menyetujui <a href="terms-of-service.html">Ketentuan Layanan</a> & <a href="privacy-policy.html">Kebijakan Privasi</a> Getsee.
+                Dengan melanjutkan, pesanan kopi & donat Anda tersimpan di sistem kasir Getsee.
               </p>
             </form>
           </div>
@@ -151,8 +161,9 @@
     </main>
   </div>
 
-  <script src="js/nav.js?v=2026_fullstack"></script>
+  <script src="js/config.js?v=2026_fullstack"></script>
   <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/nav.js?v=2026_fullstack"></script>
   <script src="js/login.js?v=2026_fullstack"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Payment | Getsee Coffee & Donuts</title>
+  <title>Payment & Pickup | Getsee Coffee & Donuts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,400;0,700;0,800;1,800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
           <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
         </a>
         <div class="nav-links" aria-label="Main navigation">
-          <a href="index.html">Delivery</a>
+          <a href="index.html">Order Pickup</a>
           <a href="menu.html">Get Fresh</a>
           <a href="index.html#promo">Exclusive</a>
           <a href="index.html#contact">Large Order</a>
@@ -31,41 +31,48 @@
             </svg>
             <span class="cart-count">0</span>
           </button>
+          <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" type="button">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </button>
           <a class="login-btn" href="login.html">Login</a>
         </div>
       </nav>
+      <div class="nav-backdrop" id="navBackdrop"></div>
     </header>
 
     <main class="payment-page page">
       <section class="payment-panel">
         <div>
-          <p class="eyebrow">Payment</p>
+          <p class="eyebrow">Payment & Pickup</p>
           <h1>Checkout</h1>
           <div class="payment-list" id="paymentList"></div>
         </div>
         <aside class="payment-summary">
-          <h2>Order Summary</h2>
+          <h2>Ringkasan Pesanan</h2>
           <div class="summary-row"><span>Total</span><strong id="paymentTotal">Rp0</strong></div>
-          <div class="payment-methods" aria-label="Payment method">
-            <label><input type="radio" name="paymentMethod" value="QRIS" checked> QRIS Demo</label>
-            <label><input type="radio" name="paymentMethod" value="VA"> Virtual Account Demo</label>
-            <label><input type="radio" name="paymentMethod" value="CASH"> Pay at Counter</label>
+          <div class="payment-methods" aria-label="Metode Pembayaran">
+            <label><input type="radio" name="paymentMethod" value="QRIS" checked> QRIS (GoPay / OVO / Dana / BCA)</label>
+            <label><input type="radio" name="paymentMethod" value="VA"> Virtual Account</label>
+            <label><input type="radio" name="paymentMethod" value="CASH"> Bayar Langsung di Kasir (Tunai)</label>
           </div>
-          <p class="payment-status" id="paymentStatus">Demo payment only. No real payment gateway is connected yet.</p>
-          <button class="pay-btn" id="payButton" type="button">Pay Now</button>
+          <p class="payment-status" id="paymentStatus">Pesanan akan disiapkan untuk diambil di kasir / barista Getsee.</p>
+          <button class="pay-btn" id="payButton" type="button">Konfirmasi & Dapatkan Kode Pickup</button>
           <div class="pickup-result" id="pickupResult" hidden>
-            <small>Pickup code</small>
+            <small>Kode Pengambilan (Pickup)</small>
             <strong id="pickupCode"></strong>
             <div class="qr-box" id="qrBox" aria-label="QR pickup code"></div>
-            <p>Show this QR or code when picking up your order.</p>
+            <p>Tunjukkan kode atau QR ini ke kasir Getsee saat mengambil pesanan kopi & donat Anda.</p>
           </div>
         </aside>
       </section>
     </main>
   </div>
 
-  <script src="js/nav.js?v=2026_fullstack"></script>
+  <script src="js/config.js?v=2026_fullstack"></script>
   <script src="js/shop.js?v=2026_fullstack"></script>
+  <script src="js/nav.js?v=2026_fullstack"></script>
   <script src="js/payment.js?v=2026_fullstack"></script>
 </body>
 </html>

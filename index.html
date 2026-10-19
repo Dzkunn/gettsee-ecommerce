@@ -1392,9 +1392,30 @@ body.cart-open .cart-drawer {
 .payment-status { color: #607089; font-size: 13px; line-height: 1.5; font-weight: 800; }
 .pickup-result { display: grid; justify-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid rgba(4,73,157,.12); text-align: center; }
 .pickup-result strong { font-size: 28px; color: var(--blue); }
-.qr-box { width: 154px; height: 154px; display: grid; grid-template-columns: repeat(11, 1fr); gap: 2px; padding: 10px; border: 4px solid var(--blue); border-radius: 14px; background: #ffffff; }
-.qr-box span { background: #ffffff; }
-.qr-box span.dark { background: #00438D; }
+/* PAYMENT GATEWAY MODAL (API SIMULATION POPUP) */
+.payment-modal-overlay { position: fixed; inset: 0; background: rgba(7, 24, 49, .72); backdrop-filter: blur(4px); z-index: 2100; display: none; place-items: center; padding: 16px; }
+.payment-modal-overlay.open { display: grid; }
+.payment-modal-card { width: min(460px, 100%); background: #ffffff; border-radius: 22px; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.35); border: 1.5px solid rgba(0,67,141,.16); animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; }
+@keyframes popIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.payment-modal-header { background: #00438D; color: #ffffff; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+.payment-modal-header h3 { margin: 0; font-size: 16px; font-weight: 800; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; gap: 8px; color: #ffffff; }
+.payment-modal-close { background: transparent; border: 0; color: #ffffff; font-size: 22px; cursor: pointer; line-height: 1; padding: 4px; }
+.payment-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.payment-api-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; background: #eef4ff; color: #00438D; padding: 4px 10px; border-radius: 999px; align-self: flex-start; }
+.payment-modal-amount { background: #f7faff; border: 1px solid rgba(0, 67, 141, 0.12); border-radius: 16px; padding: 14px; text-align: center; }
+.payment-modal-amount small { color: #607089; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; }
+.payment-modal-amount strong { color: #00438D; font-size: 28px; font-weight: 900; }
+.payment-methods-grid { display: grid; gap: 8px; }
+.payment-method-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; border: 1.5px solid rgba(0, 67, 141, 0.14); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; background: #fff; }
+.payment-method-item:hover, .payment-method-item.selected { border-color: #00438D; background: #f0f6ff; }
+.payment-method-left { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 13.5px; color: #071831; }
+.payment-modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+.payment-modal-actions button { flex: 1; padding: 13px; border-radius: 999px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Montserrat', sans-serif; }
+.btn-pay-confirm { background: #00438D; color: #ffffff; border: 0; transition: background 0.2s; }
+.btn-pay-confirm:hover { background: #04499d; }
+.btn-pay-cancel { background: #f0f2f6; color: #071831; border: 0; }
+.api-spinner { width: 44px; height: 44px; border: 4px solid #e2e8f0; border-top-color: #00438D; border-radius: 50%; margin: 0 auto; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 #promo { position: relative; }
 footer { position: relative; background: #00438D; border-top: 1px solid rgba(255,255,255,.15); padding: 54px 0 26px; margin-top: auto; }
@@ -1714,14 +1735,14 @@ footer { position: relative; background: #00438D; border-top: 1px solid rgba(255
   <div class="site-container">
     <header class="topbar">
       <nav class="nav">
-        <a class="brand" href="#delivery" aria-label="Getsee home">
+        <a class="brand" href="#delivery" onclick="navigateToView('delivery'); return false;" aria-label="Getsee home">
           <span class="brand-logo"><img src="assets/logo-baru-clean.png" alt="Getsee Coffee & Donuts"></span>
         </a>
         <div class="nav-links" aria-label="Main navigation">
-          <a class="nav-link active" href="#delivery" data-view="delivery">Order Now</a>
-          <a class="nav-link" href="#getfresh" data-view="getfresh">Get Fresh</a>
-          <a class="nav-link" href="#promo">Exclusive</a>
-          <a class="nav-link" href="#contact">Large Order</a>
+          <a class="nav-link active" href="#delivery" onclick="navigateToView('delivery'); return false;" data-view="delivery">Order Pickup</a>
+          <a class="nav-link" href="#getfresh" onclick="navigateToView('getfresh'); return false;" data-view="getfresh">Get Fresh</a>
+          <a class="nav-link" href="#promo" onclick="navigateToView('delivery'); document.getElementById('promo').scrollIntoView({behavior:'smooth'}); return false;">Exclusive</a>
+          <a class="nav-link" href="#contact" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'}); return false;">Large Order</a>
         </div>
         <div class="actions">
           <button class="cart" aria-label="Cart" type="button">
@@ -1891,10 +1912,9 @@ footer { position: relative; background: #00438D; border-top: 1px solid rgba(255
                     </label>
                   </div>
                   <button class="login-submit" type="submit" id="authSubmitBtn">Masuk Sekarang</button>
-                  <div class="guest-link-row" id="guestLinkRow" style="margin-top:14px;display:flex;flex-direction:column;gap:8px;text-align:center;">
-                    <a href="#payment" onclick="event.preventDefault(); navigateToView('payment');">Atau lanjut tanpa login sebagai <strong>Tamu</strong> →</a>
-                    <a href="#profile" onclick="event.preventDefault(); navigateToView('profile');" style="color:#00438D;font-weight:800;font-size:13px;text-decoration:underline;">👤 Buka Halaman Profil Langsung (Demo Mode) →</a>
-                  </div>
+                  <p style="margin-top:16px;text-align:center;font-size:12px;color:#607089;line-height:1.5;">
+                    Masuk ke akun Getsee untuk mengumpulkan loyalty point, memesan menu favorit, dan melacak riwayat pesanan Anda.
+                  </p>
                 </form>
               </div>
             </section>
@@ -1918,17 +1938,17 @@ footer { position: relative; background: #00438D; border-top: 1px solid rgba(255
               <h2>Order Summary</h2>
               <div class="summary-row"><span>Total</span><strong id="paymentTotal">Rp0</strong></div>
               <div class="payment-methods" aria-label="Payment method">
-                <label><input type="radio" name="paymentMethod" value="QRIS" checked> QRIS Instant</label>
-                <label><input type="radio" name="paymentMethod" value="VA"> Virtual Account</label>
-                <label><input type="radio" name="paymentMethod" value="CASH"> Bayar di Kasir (Cash)</label>
+                <label><input type="radio" name="paymentMethod" value="QRIS" checked> QRIS Instant (GoPay / OVO / Dana / ShopeePay)</label>
+                <label><input type="radio" name="paymentMethod" value="Virtual Account"> Virtual Account (BCA / Mandiri / BNI)</label>
+                <label><input type="radio" name="paymentMethod" value="Credit Card"> Kartu Kredit / Debit Online</label>
               </div>
-              <p class="payment-status" id="paymentStatus">Pesanan siap dibuat setelah pembayaran dikonfirmasi.</p>
+              <p class="payment-status" id="paymentStatus">Pesanan diproses secara instan melalui Payment Gateway API resmi.</p>
               <button class="pay-btn" id="payButton" type="button" onclick="handlePayNow()">Bayar Sekarang</button>
-              <div class="pickup-result" id="pickupResult" style="display: none;">
-                <small>Kode Pengambilan</small>
-                <strong id="pickupCode"></strong>
-                <div class="qr-box" id="qrBox" aria-label="QR pickup code"></div>
-                <p>Tunjukkan kode atau QR ini saat mengambil pesanan Anda di kasir Getsee.</p>
+              <div class="pickup-result" id="pickupResult" style="display: none; padding: 16px; background: #f7faff; border: 1.5px dashed #00438D; border-radius: 16px; margin-top: 14px;">
+                <span style="font-size: 11px; font-weight: 800; color: #12b76a; background: #ecfdf3; padding: 4px 10px; border-radius: 999px;">✓ STATUS: LUNAS</span>
+                <small style="color: #607089; margin-top: 8px; display: block;">Kode Pengambilan / Pickup</small>
+                <strong id="pickupCode" style="font-size: 24px; color: #00438D; letter-spacing: 1px; display: block; margin: 4px 0;"></strong>
+                <p style="color: #607089; font-size: 12.5px; line-height: 1.5; margin: 0;">Tunjukkan kode pickup ini ke kasir / barista Getsee saat mengambil pesanan Anda.</p>
               </div>
             </aside>
           </section>
@@ -2035,6 +2055,19 @@ footer { position: relative; background: #00438D; border-top: 1px solid rgba(255
             <button type="submit">Simpan</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- Modal Payment Gateway API Popup -->
+    <div class="payment-modal-overlay" id="paymentGatewayModalOverlay" role="dialog" aria-modal="true" aria-labelledby="payGatewayTitle">
+      <div class="payment-modal-card">
+        <div class="payment-modal-header">
+          <h3 id="payGatewayTitle"><span style="color:#FFF006;">⚡</span> Getsee Payment Gateway</h3>
+          <button type="button" class="payment-modal-close" onclick="closePaymentGatewayModal()" aria-label="Tutup Payment Gateway">✕</button>
+        </div>
+        <div class="payment-modal-body" id="paymentGatewayBody">
+          <!-- Dynamic Content rendered by JavaScript -->
+        </div>
       </div>
     </div>
 
@@ -2336,6 +2369,18 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
     const views = ['delivery', 'getfresh', 'login', 'payment', 'profile'];
     if (!views.includes(viewName)) viewName = 'delivery';
 
+    // Route guard: Profile WAJIB login
+    if (viewName === 'profile' && (!window.getseeShop || !window.getseeShop.isLoggedIn())) {
+      alert('Silakan login ke akun Anda terlebih dahulu untuk mengakses halaman profil.');
+      viewName = 'login';
+    }
+
+    // Route guard: Checkout / Payment WAJIB login
+    if (viewName === 'payment' && (!window.getseeShop || !window.getseeShop.isLoggedIn())) {
+      alert('Silakan login ke akun Anda terlebih dahulu sebelum melakukan pemesanan.');
+      viewName = 'login';
+    }
+
     // Jika pengguna sudah login dan mencoba mengakses login, arahkan langsung ke profile
     if (viewName === 'login' && window.getseeShop && window.getseeShop.isLoggedIn()) {
       viewName = 'profile';
@@ -2371,7 +2416,7 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
     // Update URL hash without reload
     const hash = categoryId ? `#${validView}?category=${categoryId}` : `#${validView}`;
     if (window.location.hash !== hash) {
-      history.pushState(null, '', hash);
+      history.replaceState(null, '', hash);
     }
 
     // View specific actions
@@ -2931,37 +2976,151 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
     document.getElementById('pickupResult').style.display = 'none';
   }
 
+  let activePaymentOrderCode = '';
+  let activePaymentMethod = 'QRIS Instant';
+
   function handlePayNow() {
-    const cart = window.getseeShop.getCart();
-    if (!cart.length) {
-      alert('Keranjang masih kosong!');
+    // 1. Guard login
+    if (!window.getseeShop || !window.getseeShop.isLoggedIn()) {
+      alert('Silakan login terlebih dahulu untuk melakukan pembayaran.');
+      navigateToView('login');
       return;
     }
-    const code = 'GETSEE-' + Math.floor(100000 + Math.random() * 900000);
-    document.getElementById('pickupCode').textContent = code;
-    
-    // Simple mock QR matrix
-    const qrBox = document.getElementById('qrBox');
-    qrBox.innerHTML = Array.from({ length: 121 }, () => {
-      const dark = Math.random() > 0.45 ? 'dark' : '';
-      return `<span class="${dark}"></span>`;
-    }).join('');
 
-    document.getElementById('pickupResult').style.display = 'grid';
-    document.getElementById('paymentStatus').textContent = 'Pembayaran Diterima! Silakan simpan kode pickup di bawah.';
+    // 2. Guard keranjang
+    const cart = window.getseeShop.getCart();
+    if (!cart.length) {
+      alert('Keranjang belanja Anda masih kosong! Silakan pilih menu terlebih dahulu.');
+      return;
+    }
 
-    // Simpan ke riwayat pesanan (untuk profil & poin loyalti)
     const methodInput = document.querySelector('input[name="paymentMethod"]:checked');
-    window.getseeShop.saveOrder({
-      code,
-      date: new Date().toISOString(),
-      method: methodInput ? methodInput.value : 'QRIS',
-      items: cart.map(i => ({ name: i.name, qty: i.qty })),
-      total: window.getseeShop.cartTotal()
-    });
+    activePaymentMethod = methodInput ? methodInput.value : 'QRIS Instant';
+    activePaymentOrderCode = 'GETSEE-' + Math.floor(100000 + Math.random() * 900000);
 
-    // Clear cart after checkout
-    window.getseeShop.saveCart([]);
+    openPaymentGatewayModal();
+  }
+
+  function openPaymentGatewayModal() {
+    const modal = document.getElementById('paymentGatewayModalOverlay');
+    const body = document.getElementById('paymentGatewayBody');
+    if (!modal || !body) return;
+
+    const totalFormatted = window.getseeShop.formatRupiah(window.getseeShop.cartTotal());
+    const sess = window.getseeShop.getSession() || {};
+    let savedProfile = {};
+    try { savedProfile = JSON.parse(localStorage.getItem('getseeProfile')) || {}; } catch(e) {}
+    const customerName = savedProfile.name || (sess.email ? sess.email.split('@')[0] : 'Getsee Member');
+
+    body.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="payment-api-badge">🔒 PAYMENT GATEWAY API SIMULATOR</span>
+        <span style="font-size:12px;color:#607089;font-weight:700;">${activePaymentOrderCode}</span>
+      </div>
+
+      <div class="payment-modal-amount">
+        <small>Total Tagihan Pembayaran</small>
+        <strong>${totalFormatted}</strong>
+      </div>
+
+      <div style="font-size:13px;color:#071831;background:#f8faff;padding:12px 14px;border-radius:12px;border:1px solid rgba(0,67,141,0.08);">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <span style="color:#607089;">Pelanggan:</span>
+          <strong>${escapeHtml(customerName)}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#607089;">Metode Dipilih:</span>
+          <strong style="color:#00438D;">${escapeHtml(activePaymentMethod)}</strong>
+        </div>
+      </div>
+
+      <div class="payment-modal-actions">
+        <button type="button" class="btn-pay-cancel" onclick="closePaymentGatewayModal()">Batal</button>
+        <button type="button" class="btn-pay-confirm" id="btnConfirmApiPayment" onclick="processPaymentGatewayApi()">Konfirmasi & Bayar</button>
+      </div>
+    `;
+
+    modal.classList.add('open');
+  }
+
+  function closePaymentGatewayModal() {
+    const modal = document.getElementById('paymentGatewayModalOverlay');
+    if (modal) modal.classList.remove('open');
+  }
+
+  function processPaymentGatewayApi() {
+    const body = document.getElementById('paymentGatewayBody');
+    if (!body) return;
+
+    // Loading State
+    body.innerHTML = `
+      <div style="text-align:center;padding:26px 12px;">
+        <div class="api-spinner"></div>
+        <h4 style="margin:16px 0 6px;color:#071831;font-size:16px;">Menghubungkan ke Payment Gateway...</h4>
+        <p style="color:#607089;font-size:12.5px;margin:0;line-height:1.5;">Memproses verifikasi transaksi aman via API Endpoint...</p>
+      </div>
+    `;
+
+    setTimeout(() => {
+      const cart = window.getseeShop.getCart();
+      const totalAmount = window.getseeShop.cartTotal();
+      const totalFormatted = window.getseeShop.formatRupiah(totalAmount);
+
+      // Simpan pesanan ke riwayat pesanan
+      window.getseeShop.saveOrder({
+        code: activePaymentOrderCode,
+        date: new Date().toISOString(),
+        method: activePaymentMethod,
+        items: cart.map(i => ({ name: i.name, qty: i.qty })),
+        total: totalAmount
+      });
+
+      // Kosongkan keranjang
+      window.getseeShop.saveCart([]);
+
+      // Update pickup result di checkout page
+      const pickupResult = document.getElementById('pickupResult');
+      const pickupCodeEl = document.getElementById('pickupCode');
+      const paymentStatus = document.getElementById('paymentStatus');
+      if (pickupResult && pickupCodeEl) {
+        pickupCodeEl.textContent = activePaymentOrderCode;
+        pickupResult.style.display = 'block';
+      }
+      if (paymentStatus) {
+        paymentStatus.textContent = 'Pembayaran terverifikasi lunas via Payment Gateway API.';
+      }
+
+      // Success UI di dalam modal
+      body.innerHTML = `
+        <div style="text-align:center;padding:12px 6px;">
+          <div style="width:54px;height:54px;border-radius:50%;background:#ecfdf3;color:#12b76a;display:grid;place-items:center;font-size:28px;margin:0 auto 12px;border:2px solid #a6f4c5;font-weight:900;">✓</div>
+          <h3 style="color:#071831;margin:0 0 6px;font-size:19px;font-family:'Montserrat',sans-serif;font-weight:800;">Pembayaran Berhasil!</h3>
+          <span style="display:inline-block;background:#ecfdf3;color:#027a48;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;margin-bottom:14px;">TRANSACTION SETTLED &bull; HTTP 200 OK</span>
+          
+          <div style="background:#f7faff;border:1px solid rgba(0,67,141,0.12);border-radius:14px;padding:12px 14px;text-align:left;font-size:13px;display:grid;gap:8px;margin-bottom:16px;">
+            <div style="display:flex;justify-content:space-between;"><span style="color:#607089;">Kode Pengambilan</span><strong style="color:#00438D;font-size:14.5px;">${activePaymentOrderCode}</strong></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#607089;">Metode Pembayaran</span><strong>${escapeHtml(activePaymentMethod)}</strong></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#607089;">Total Pembayaran</span><strong style="color:#00438D;">${totalFormatted}</strong></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:#607089;">Status Pesanan</span><strong style="color:#12b76a;">Sedang Disiapkan</strong></div>
+          </div>
+
+          <div style="display:flex;gap:10px;">
+            <button type="button" class="btn-pay-confirm" onclick="finishPaymentToProfile()">Lihat di Profil</button>
+            <button type="button" class="btn-pay-cancel" onclick="finishPaymentToHome()">Selesai & Ke Menu</button>
+          </div>
+        </div>
+      `;
+    }, 1200);
+  }
+
+  function finishPaymentToProfile() {
+    closePaymentGatewayModal();
+    navigateToView('profile');
+  }
+
+  function finishPaymentToHome() {
+    closePaymentGatewayModal();
+    navigateToView('delivery');
   }
 
   // 7. AUTH / LOGIN / PROFILE HANDLERS
@@ -3030,56 +3189,33 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
 
   function handleLogout() {
     window.getseeShop.logout();
-    alert('Anda telah keluar.');
-    navigateToView('delivery');
+    try {
+      localStorage.removeItem('getseeProfile');
+      localStorage.removeItem('getseeOrders');
+      localStorage.removeItem('getseeFavorites');
+    } catch(e) {}
+    alert('Anda telah berhasil keluar dari akun.');
+    navigateToView('login');
   }
 
   function ensureProfileDemoData() {
-    if (!localStorage.getItem('getseeOrders')) {
-      const sampleOrders = [
-        {
-          code: 'GETSEE-884920',
-          date: new Date(Date.now() - 3600000 * 24).toISOString(),
-          method: 'QRIS Instant',
-          items: [
-            { name: 'Coffee + Donuts Combo', qty: 2 },
-            { name: 'Glaze Donut', qty: 3 }
-          ],
-          total: 115000
-        },
-        {
-          code: 'GETSEE-519283',
-          date: new Date(Date.now() - 3600000 * 72).toISOString(),
-          method: 'Virtual Account',
-          items: [
-            { name: 'Cold Brew Signature', qty: 1 },
-            { name: 'Strawberry Cheese Donut', qty: 2 }
-          ],
-          total: 58000
-        }
-      ];
-      try { localStorage.setItem('getseeOrders', JSON.stringify(sampleOrders)); } catch(e) {}
-    }
-
-    if (!localStorage.getItem('getseeFavorites')) {
-      const sampleFavs = [
-        { key: 'coffee|Coffee Milk Special', category: 'coffee', name: 'Coffee Milk Special', price: '20K', image: 'assets/cinnamon-wall-crash.png' },
-        { key: 'donuts|Glaze', category: 'donuts', name: 'Glaze', price: '13K', image: 'assets/food/crop-donuts.jpg' },
-        { key: 'promo|Coffee + Donuts Combo', category: 'promo', name: 'Coffee + Donuts Combo', price: '38K', image: 'assets/bundling.png' }
-      ];
-      try { localStorage.setItem('getseeFavorites', JSON.stringify(sampleFavs)); } catch(e) {}
-    }
+    // Tidak menyuntik data pesanan demo palsu agar riwayat pesanan akun tetap autentik
   }
 
   function loadProfileData() {
-    ensureProfileDemoData();
+    if (!window.getseeShop || !window.getseeShop.isLoggedIn()) {
+      alert('Silakan login terlebih dahulu untuk mengakses profil Anda.');
+      navigateToView('login');
+      return;
+    }
     try {
       const sess = window.getseeShop.getSession();
       let savedProfile = null;
       try { savedProfile = JSON.parse(localStorage.getItem('getseeProfile')); } catch(e) {}
 
-      const userEmail = (sess && sess.email) ? sess.email : 'member.getsee@gmail.com';
-      const userName = (savedProfile && savedProfile.name) ? savedProfile.name : ((sess && sess.name) ? sess.name : 'Getsee Coffee Lover');
+      const userEmail = (sess && sess.email) ? sess.email : '';
+      const fallbackName = userEmail ? userEmail.split('@')[0] : 'Getsee Member';
+      const userName = (savedProfile && savedProfile.name) ? savedProfile.name : fallbackName;
       const userBirth = (savedProfile && savedProfile.birthDate) ? savedProfile.birthDate : '-';
       let userGender = '-';
       if (savedProfile && savedProfile.gender) {
@@ -3309,6 +3445,11 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
       if (minusKey) window.getseeShop.changeQty(minusKey, -1);
       if (e.target.id === 'cartCheckout') {
         window.getseeShop.closeCart();
+        if (!window.getseeShop || !window.getseeShop.isLoggedIn()) {
+          alert('Silakan login terlebih dahulu sebelum melakukan pemesanan.');
+          navigateToView('login');
+          return;
+        }
         navigateToView('payment');
       }
     });
@@ -3334,6 +3475,22 @@ window.findMenuCategory = function findMenuCategory(categoryId) {
         fieldName.style.display = 'grid';
         formTitle.textContent = 'Daftar Akun Baru';
         authSubmitBtn.textContent = 'Daftar Sekarang';
+      });
+    }
+
+    // Guest checkout button listener in index.html
+    const guestBtn = document.getElementById('guestCheckoutBtn');
+    if (guestBtn) {
+      guestBtn.addEventListener('click', () => {
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        const guestEmail = `guest_${randomNum}@getsee.coffee`;
+        window.getseeShop.login(guestEmail, 'guest123');
+        let profile = {};
+        try { profile = JSON.parse(localStorage.getItem('getseeProfile')) || {}; } catch(e) {}
+        profile.name = 'Pelanggan Tamu';
+        try { localStorage.setItem('getseeProfile', JSON.stringify(profile)); } catch(e) {}
+        alert('Melanjutkan checkout sebagai Tamu...');
+        navigateToView('payment');
       });
     }
   }
