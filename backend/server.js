@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,9 +16,12 @@ const JWT_SECRET = process.env.JWT_SECRET || 'getsee_secret_default_key_2026';
 app.use(cors());
 app.use(express.json());
 
-// Melayani file frontend (HTML, CSS, JS, Assets) langsung dari server jika dijalankan bersamaan
-app.use(express.static(path.join(__dirname, '..')));
-app.use(express.static(__dirname));
+// Melayani file frontend (HTML, CSS, JS, Assets) langsung dari server
+const rootDir = fs.existsSync(path.join(__dirname, '..', 'index.html'))
+  ? path.join(__dirname, '..')
+  : __dirname;
+
+app.use(express.static(rootDir));
 
 // Database Connection
 const pool = new Pool({
@@ -84,15 +88,14 @@ function authenticateToken(req, res, next) {
 
 // Root check / Serve index.html
 app.get('/', (req, res) => {
-  const indexPath = path.join(__dirname, '..', 'index.html');
-  res.sendFile(indexPath, (err) => {
-    if (err) {
-      res.json({
-        status: 'online',
-        service: 'Getsee Coffee & Donuts API',
-        version: '1.0.0'
-      });
-    }
+  const indexPath = path.join(rootDir, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.json({
+    status: 'online',
+    service: 'Getsee Coffee & Donuts API',
+    version: '1.0.0'
   });
 });
 

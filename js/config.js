@@ -7,5 +7,5 @@ window.GETSEE_CONFIG = {
   // Jika masih di komputer lokal: 'http://localhost:3000'
   API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3000'
-    : '' // Ketika kosong, dia akan otomatis mencoba /api lokal atau fallback
+    : 'https://gettsee-ecommerce-production.up.railway.app'
 };
