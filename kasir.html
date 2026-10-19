@@ -338,6 +338,36 @@
       .receipt-paper, .receipt-paper * { visibility: visible; }
       .receipt-paper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
     }
+
+    /* CASHIER AUTH MODAL */
+    .cashier-auth-overlay {
+      position: fixed; inset: 0; background: rgba(7, 24, 49, 0.92);
+      backdrop-filter: blur(8px); z-index: 5000; display: grid; place-items: center; padding: 20px;
+    }
+    .cashier-auth-card {
+      background: #ffffff; width: min(400px, 100%); border-radius: 24px;
+      padding: 32px 28px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+      border: 1.5px solid rgba(0, 67, 141, 0.16);
+    }
+    .cashier-auth-icon {
+      width: 60px; height: 60px; border-radius: 50%; background: #eef4ff; color: #00438D;
+      display: grid; place-items: center; font-size: 28px; margin: 0 auto 16px;
+    }
+    .cashier-pin-display {
+      letter-spacing: 12px; font-size: 28px; font-weight: 900;
+      text-align: center; padding: 12px; border-radius: 12px;
+      border: 2px solid #00438D; width: 100%; box-sizing: border-box;
+      margin: 16px 0; background: #fbfdff; color: #00438D;
+    }
+    .cashier-pin-keypad {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;
+    }
+    .btn-keypad {
+      padding: 14px 0; font-size: 18px; font-weight: 800; border-radius: 12px;
+      border: 1px solid #ccd; background: #fff; cursor: pointer; transition: all 0.15s ease;
+    }
+    .btn-keypad:hover { background: #00438D; color: #fff; border-color: #00438D; }
+    .btn-keypad.action { font-size: 14px; background: #f0f4f9; color: #071831; }
   </style>
 </head>
 <body>
@@ -355,7 +385,9 @@
         <button class="kasir-tab-btn" onclick="switchKasirTab('stock')">📦 Kelola Stok Menu</button>
       </div>
       <div style="display: flex; gap: 10px; align-items: center;">
+        <span id="cashierUserLabel" style="font-size: 12.5px; font-weight: 700; background: rgba(255,255,255,0.14); padding: 6px 12px; border-radius: 999px;">🔒 Terkunci</span>
         <button type="button" class="btn-kds btn-receipt" onclick="loadKasirOrders()">🔄 Refresh</button>
+        <button type="button" class="btn-kds" style="background:#b42318; color:#fff;" onclick="logoutCashier()">Keluar Kasir ✕</button>
         <a href="index.html" class="btn-kds" style="background: rgba(255,255,255,0.18); color:#fff; text-decoration:none;">Buka Toko Web ↗</a>
       </div>
     </header>
@@ -485,7 +517,34 @@
       <p style="text-align: center; font-size: 11px;">Terima kasih atas pesanan Anda!<br>Simpan struk ini untuk pengambilan.</p>
       <div style="margin-top: 16px; display: flex; gap: 8px;">
         <button type="button" class="btn-kds btn-brew" style="flex:1;" onclick="window.print()">🖨️ Cetak</button>
-        <button type="button" class="btn-kds" style="background:#eee;" onclick="closeReceipt()">Tutup</button>
+  <!-- POP-UP AUTENTIKASI PIN KASIR / BARISTA -->
+  <div class="cashier-auth-overlay" id="cashierAuthModal">
+    <div class="cashier-auth-card">
+      <div class="cashier-auth-icon">🔒</div>
+      <h2 style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; margin:0 0 6px;">Terminal Kasir Getsee</h2>
+      <p style="font-size:13px; color:#607089; margin:0 0 16px;">Masukkan 4 digit PIN Kasir / Barista untuk membuka antrean dan omset.</p>
+      
+      <input type="password" id="pinDisplay" class="cashier-pin-display" readonly placeholder="••••" maxlength="4">
+      <p id="pinError" style="color:#b42318; font-size:12px; font-weight:700; margin:4px 0 10px; min-height:18px;"></p>
+
+      <div class="cashier-pin-keypad">
+        <button type="button" class="btn-keypad" onclick="pressPin('1')">1</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('2')">2</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('3')">3</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('4')">4</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('5')">5</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('6')">6</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('7')">7</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('8')">8</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('9')">9</button>
+        <button type="button" class="btn-keypad action" onclick="clearPin()">C</button>
+        <button type="button" class="btn-keypad" onclick="pressPin('0')">0</button>
+        <button type="button" class="btn-keypad action" style="background:#00438D; color:#fff;" onclick="submitPin()">OK</button>
+      </div>
+
+      <div style="margin-top:16px; border-top:1px dashed #ccd; padding-top:12px;">
+        <small style="color:#607089; font-size:11.5px; display:block;">Demo Barista PIN: <strong>1234</strong></small>
+        <a href="index.html" style="color:#00438D; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:6px;">← Kembali ke Menu Pembeli</a>
       </div>
     </div>
   </div>
@@ -498,6 +557,94 @@
     let allOrders = [];
     let posCart = [];
     let stockData = {};
+    let currentPin = '';
+
+    // AUTH / PIN FUNCTIONS
+    function pressPin(num) {
+      if (currentPin.length < 4) {
+        currentPin += num;
+        document.getElementById('pinDisplay').value = currentPin;
+        document.getElementById('pinError').textContent = '';
+        if (currentPin.length === 4) {
+          setTimeout(submitPin, 200);
+        }
+      }
+    }
+
+    function clearPin() {
+      currentPin = '';
+      document.getElementById('pinDisplay').value = '';
+      document.getElementById('pinError').textContent = '';
+    }
+
+    async function submitPin() {
+      if (currentPin.length < 4) {
+        document.getElementById('pinError').textContent = 'Masukkan 4 digit PIN.';
+        return;
+      }
+
+      const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+      try {
+        const res = await fetch(`${baseUrl}/api/cashier/verify-pin`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin: currentPin })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          sessionStorage.setItem('getseeCashierToken', data.token);
+          sessionStorage.setItem('getseeCashierPin', currentPin);
+          document.getElementById('cashierAuthModal').style.display = 'none';
+          document.getElementById('cashierUserLabel').textContent = '🟢 Barista Aktif';
+          document.getElementById('cashierUserLabel').style.background = '#12b76a';
+          loadKasirOrders();
+        } else {
+          document.getElementById('pinError').textContent = data.message || 'PIN Salah.';
+          clearPin();
+        }
+      } catch (e) {
+        // Fallback demo lokal jika offline
+        if (currentPin === '1234') {
+          sessionStorage.setItem('getseeCashierPin', '1234');
+          document.getElementById('cashierAuthModal').style.display = 'none';
+          document.getElementById('cashierUserLabel').textContent = '🟢 Barista Aktif (Demo)';
+          document.getElementById('cashierUserLabel').style.background = '#12b76a';
+          loadKasirOrders();
+        } else {
+          document.getElementById('pinError').textContent = 'PIN Salah. Coba: 1234';
+          clearPin();
+        }
+      }
+    }
+
+    function checkCashierSession() {
+      const pin = sessionStorage.getItem('getseeCashierPin');
+      const token = sessionStorage.getItem('getseeCashierToken');
+      if (pin === '1234' || token) {
+        document.getElementById('cashierAuthModal').style.display = 'none';
+        document.getElementById('cashierUserLabel').textContent = '🟢 Barista Aktif';
+        document.getElementById('cashierUserLabel').style.background = '#12b76a';
+        loadKasirOrders();
+      } else {
+        document.getElementById('cashierAuthModal').style.display = 'grid';
+      }
+    }
+
+    function logoutCashier() {
+      sessionStorage.removeItem('getseeCashierToken');
+      sessionStorage.removeItem('getseeCashierPin');
+      window.location.reload();
+    }
+
+    function getCashierHeaders() {
+      const token = sessionStorage.getItem('getseeCashierToken') || '';
+      const pin = sessionStorage.getItem('getseeCashierPin') || '';
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+        'x-cashier-pin': pin
+      };
+    }
 
     function switchKasirTab(tab) {
       document.querySelectorAll('.kasir-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -517,9 +664,14 @@
 
     // 1. LOAD & RENDER KDS ORDERS
     async function loadKasirOrders() {
+      const pin = sessionStorage.getItem('getseeCashierPin');
+      if (!pin) return; // Jangan load jika belum login kasir
+
       const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
       try {
-        const res = await fetch(`${baseUrl}/api/cashier/orders`);
+        const res = await fetch(`${baseUrl}/api/cashier/orders`, {
+          headers: getCashierHeaders()
+        });
         const data = await res.json();
         if (data.success) {
           allOrders = data.orders || [];
@@ -620,7 +772,7 @@
       try {
         await fetch(`${baseUrl}/api/cashier/orders/${pickupCode}/status`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getCashierHeaders(),
           body: JSON.stringify({ status: nextStatus })
         });
       } catch (e) {}
@@ -719,7 +871,7 @@
       try {
         const res = await fetch(`${baseUrl}/api/cashier/orders`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getCashierHeaders(),
           body: JSON.stringify({
             customer_name: name,
             table_number: table,
@@ -803,9 +955,9 @@
       document.getElementById('receiptModal').classList.remove('open');
     }
 
-    // Auto-refresh orders every 10 seconds
+    // Auto-refresh orders every 10 seconds jika sudah login
     setInterval(loadKasirOrders, 10000);
-    document.addEventListener('DOMContentLoaded', loadKasirOrders);
+    document.addEventListener('DOMContentLoaded', checkCashierSession);
   </script>
 </body>
 </html>

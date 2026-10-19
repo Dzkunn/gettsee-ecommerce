@@ -40,11 +40,20 @@ async function initDatabase() {
         name VARCHAR(120),
         email VARCHAR(120) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
+        role VARCHAR(20) DEFAULT 'customer',
         birth_date VARCHAR(30),
         gender VARCHAR(30),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+
+      -- Pastikan kolom role ada jika tabel sudah pernah dibuat sebelumnya
+      DO $$ 
+      BEGIN 
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='role') THEN 
+          ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'customer'; 
+        END IF; 
+      END $$;
 
       CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
@@ -65,6 +74,18 @@ async function initDatabase() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
+
+    // Otomatis buat akun Kasir & PIN default jika belum ada
+    const cashierCheck = await pool.query("SELECT id FROM users WHERE email = 'kasir@getsee.coffee'");
+    if (cashierCheck.rows.length === 0) {
+      const cashierHash = await bcrypt.hash('kasir123', 10);
+      await pool.query(
+        "INSERT INTO users (name, email, password, role) VALUES ('Kasir Getsee', 'kasir@getsee.coffee', $1, 'cashier')",
+        [cashierHash]
+      );
+      console.log('🔑 Akun Kasir Default Dibuat: kasir@getsee.coffee / kasir123 (PIN: 1234)');
+    }
+
     console.log('✅ PostgreSQL Getsee: Tabel users, orders, & menu_stock siap digunakan!');
   } catch (err) {
     console.error('❌ Gagal inisialisasi tabel database:', err.message);
@@ -84,6 +105,31 @@ function authenticateToken(req, res, next) {
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
       return res.status(403).json({ success: false, message: 'Sesi kedaluwarsa atau token tidak valid.' });
+    }
+    req.user = user;
+    next();
+  });
+}
+
+// Middleware Khusus Hak Akses Kasir / Admin
+function requireCashierAuth(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const cashierPin = req.headers['x-cashier-pin'];
+
+  // Boleh masuk jika memasukkan PIN kasir cepat (1234) atau token role cashier
+  if (cashierPin === '1234' || cashierPin === (process.env.CASHIER_PIN || '1234')) {
+    req.user = { email: 'kasir@getsee.coffee', role: 'cashier' };
+    return next();
+  }
+
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Akses Ditolak: Khusus Kasir & Karyawan Getsee.' });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err || (user.role !== 'cashier' && user.role !== 'admin')) {
+      return res.status(403).json({ success: false, message: 'Akses Dilarang: Akun Anda tidak memiliki hak akses Kasir.' });
     }
     req.user = user;
     next();
@@ -164,7 +210,7 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Password salah. Periksa kembali sandi Anda.' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role || 'customer' }, JWT_SECRET, { expiresIn: '30d' });
 
     res.json({
       success: true,
@@ -174,6 +220,7 @@ app.post('/api/auth/login', async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || 'customer',
         birthDate: user.birth_date,
         gender: user.gender
       }
@@ -274,11 +321,29 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
 });
 
 // -------------------------------------------------------------
-// KASIR & POS APIs
+// KASIR & POS APIs (PROTECTED ACCESS)
 // -------------------------------------------------------------
 
-// Ambil semua antrean pesanan untuk kasir (dilengkapi filter tanggal hari ini)
-app.get('/api/cashier/orders', async (req, res) => {
+// Verifikasi PIN Kasir (untuk login modal cepat di frontend)
+app.post('/api/cashier/verify-pin', (req, res) => {
+  const { pin } = req.body;
+  const validPin = process.env.CASHIER_PIN || '1234';
+
+  if (String(pin) === String(validPin)) {
+    const token = jwt.sign({ email: 'kasir@getsee.coffee', role: 'cashier', name: 'Barista / Kasir' }, JWT_SECRET, { expiresIn: '12h' });
+    return res.json({
+      success: true,
+      message: 'PIN Kasir Valid',
+      token,
+      user: { name: 'Barista / Kasir Getsee', email: 'kasir@getsee.coffee', role: 'cashier' }
+    });
+  }
+
+  res.status(401).json({ success: false, message: 'PIN Kasir salah! Hubungi Supervisor Cafe.' });
+});
+
+// Ambil semua antrean pesanan untuk kasir
+app.get('/api/cashier/orders', requireCashierAuth, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM orders ORDER BY created_at DESC LIMIT 100'
@@ -293,7 +358,7 @@ app.get('/api/cashier/orders', async (req, res) => {
 });
 
 // Kasir ubah status pesanan (paid -> brewing -> ready -> completed / canceled)
-app.put('/api/cashier/orders/:pickupCode/status', async (req, res) => {
+app.put('/api/cashier/orders/:pickupCode/status', requireCashierAuth, async (req, res) => {
   try {
     const { pickupCode } = req.params;
     const { status } = req.body;
@@ -317,7 +382,7 @@ app.put('/api/cashier/orders/:pickupCode/status', async (req, res) => {
 });
 
 // Kasir buat pesanan Walk-in / Dine-in langsung (POS Kasir Offline)
-app.post('/api/cashier/orders', async (req, res) => {
+app.post('/api/cashier/orders', requireCashierAuth, async (req, res) => {
   try {
     const { customer_name, table_number, items, total_amount, payment_method } = req.body;
     const pickupCode = 'POS-' + Math.floor(100000 + Math.random() * 900000);
