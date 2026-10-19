@@ -56,8 +56,16 @@ async function initDatabase() {
         status VARCHAR(30) DEFAULT 'paid',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS menu_stock (
+        id VARCHAR(100) PRIMARY KEY,
+        name VARCHAR(120),
+        category VARCHAR(50),
+        is_available BOOLEAN DEFAULT true,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
     `);
-    console.log('✅ PostgreSQL Getsee: Tabel users & orders siap digunakan!');
+    console.log('✅ PostgreSQL Getsee: Tabel users, orders, & menu_stock siap digunakan!');
   } catch (err) {
     console.error('❌ Gagal inisialisasi tabel database:', err.message);
   }
@@ -259,6 +267,109 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       orders: result.rows
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// -------------------------------------------------------------
+// KASIR & POS APIs
+// -------------------------------------------------------------
+
+// Ambil semua antrean pesanan untuk kasir (dilengkapi filter tanggal hari ini)
+app.get('/api/cashier/orders', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM orders ORDER BY created_at DESC LIMIT 100'
+    );
+    res.json({
+      success: true,
+      orders: result.rows
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Kasir ubah status pesanan (paid -> brewing -> ready -> completed / canceled)
+app.put('/api/cashier/orders/:pickupCode/status', async (req, res) => {
+  try {
+    const { pickupCode } = req.params;
+    const { status } = req.body;
+    const result = await pool.query(
+      'UPDATE orders SET status = $1 WHERE pickup_code = $2 RETURNING *',
+      [status, pickupCode]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan.' });
+    }
+
+    res.json({
+      success: true,
+      message: `Status pesanan ${pickupCode} diubah menjadi ${status}.`,
+      order: result.rows[0]
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Kasir buat pesanan Walk-in / Dine-in langsung (POS Kasir Offline)
+app.post('/api/cashier/orders', async (req, res) => {
+  try {
+    const { customer_name, table_number, items, total_amount, payment_method } = req.body;
+    const pickupCode = 'POS-' + Math.floor(100000 + Math.random() * 900000);
+    const orderNote = table_number ? `Dine-in (Meja ${table_number}) - ${customer_name || 'Tamu'}` : `Walk-in - ${customer_name || 'Tamu'}`;
+
+    const result = await pool.query(
+      `INSERT INTO orders (pickup_code, email, items, total_amount, payment_method, status) 
+       VALUES ($1, $2, $3, $4, $5, 'paid') 
+       RETURNING *`,
+      [pickupCode, orderNote, JSON.stringify(items || []), total_amount || 0, payment_method || 'CASH']
+    );
+
+    res.json({
+      success: true,
+      message: 'Pesanan kasir berhasil dicatat.',
+      order: result.rows[0]
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Ambil status stok menu (habis / tersedia)
+app.get('/api/menu/stock', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM menu_stock');
+    res.json({
+      success: true,
+      stock: result.rows
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Kasir toggle stok menu (Habis / Tersedia)
+app.post('/api/menu/stock/toggle', async (req, res) => {
+  try {
+    const { id, name, category, is_available } = req.body;
+    const result = await pool.query(
+      `INSERT INTO menu_stock (id, name, category, is_available, updated_at) 
+       VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+       ON CONFLICT (id) 
+       DO UPDATE SET is_available = $4, updated_at = CURRENT_TIMESTAMP
+       RETURNING *`,
+      [id, name, category, is_available]
+    );
+
+    res.json({
+      success: true,
+      message: `Status menu ${name} diperbarui.`,
+      item: result.rows[0]
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

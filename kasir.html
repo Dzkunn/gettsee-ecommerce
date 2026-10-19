@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kasir & Barista POS | Getsee Coffee & Donuts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,700;0,800;1,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2026_royal_blue" />
+  <style>
+    body {
+      background: #f0f4f9;
+      color: #071831;
+    }
+    .kasir-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .kasir-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #00438D;
+      color: #ffffff;
+      padding: 16px 24px;
+      border-radius: 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 67, 141, 0.2);
+    }
+    .kasir-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .kasir-brand h1 {
+      font-size: 20px;
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+    }
+    .kasir-brand span.badge {
+      background: #FFF006;
+      color: #071831;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .kasir-nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 6px;
+      border-radius: 14px;
+    }
+    .kasir-tab-btn {
+      background: transparent;
+      border: 0;
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .kasir-tab-btn.active {
+      background: #FFF006;
+      color: #071831;
+    }
+    .kasir-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #f0f6ff;
+      color: #00438D;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+    .stat-info small {
+      color: #607089;
+      font-size: 12px;
+      font-weight: 700;
+      display: block;
+    }
+    .stat-info strong {
+      color: #071831;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    /* KDS BOARD (Kitchen / Counter Queue) */
+    .kds-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .kds-column {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 270px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .kds-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0f4f9;
+      margin-bottom: 14px;
+    }
+    .kds-col-header h3 {
+      font-size: 15px;
+      font-weight: 800;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .kds-col-header span.count {
+      background: #00438D;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .kds-order-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 4px;
+    }
+    .kds-order-card {
+      border: 1.5px solid rgba(0, 67, 141, 0.14);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fbfdff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+    .kds-order-card:hover {
+      box-shadow: 0 6px 18px rgba(0, 67, 141, 0.1);
+      border-color: #00438D;
+    }
+    .kds-order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kds-code {
+      font-size: 16px;
+      font-weight: 900;
+      color: #00438D;
+      letter-spacing: 0.5px;
+    }
+    .kds-time {
+      font-size: 11px;
+      color: #607089;
+      font-weight: 700;
+    }
+    .kds-customer {
+      font-size: 12.5px;
+      color: #44546f;
+      font-weight: 700;
+    }
+    .kds-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px dashed rgba(0, 67, 141, 0.12);
+      border-bottom: 1px dashed rgba(0, 67, 141, 0.12);
+      padding: 8px 0;
+    }
+    .kds-item-line {
+      font-size: 13px;
+      font-weight: 800;
+      color: #071831;
+    }
+    .kds-custom-badge {
+      display: block;
+      font-size: 11px;
+      color: #00438D;
+      font-weight: 600;
+      margin-left: 18px;
+    }
+    .kds-order-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .kds-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-kds {
+      border: 0;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-brew { background: #00438D; color: #fff; }
+    .btn-ready { background: #12b76a; color: #fff; }
+    .btn-done { background: #607089; color: #fff; }
+    .btn-receipt { background: #eef4ff; color: #00438D; }
+
+    /* TAB POS OFFLINE */
+    .pos-view {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 20px;
+    }
+    .pos-menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .pos-item-card {
+      background: #fff;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .pos-item-card:hover {
+      border-color: #00438D;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0, 67, 141, 0.12);
+    }
+    .pos-item-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: #f0f4f9;
+    }
+    .pos-cart-panel {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      height: calc(100vh - 200px);
+    }
+
+    /* TAB STOCK TOGGLE */
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .stock-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: #e2e8f0;
+      transition: .3s; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px;
+      left: 4px; bottom: 4px; background-color: white;
+      transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #12b76a; }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* STRUK PRINT MODAL */
+    .receipt-modal-overlay {
+      position: fixed; inset: 0; background: rgba(7, 24, 49, 0.65);
+      backdrop-filter: blur(4px); z-index: 3000; display: none; place-items: center; padding: 16px;
+    }
+    .receipt-modal-overlay.open { display: grid; }
+    .receipt-paper {
+      background: #fff; width: min(340px, 100%); border-radius: 12px;
+      padding: 24px; font-family: 'Courier New', Courier, monospace;
+      color: #000; box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    .receipt-paper h2 { text-align: center; margin: 0 0 4px; font-size: 18px; font-family: inherit; font-weight: 900; }
+    .receipt-paper p { font-size: 12px; margin: 2px 0; }
+    .receipt-divider { border-top: 1px dashed #000; margin: 8px 0; }
+    @media print {
+      body * { visibility: hidden; }
+      .receipt-paper, .receipt-paper * { visibility: visible; }
+      .receipt-paper { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="kasir-container">
+    <!-- TOPBAR KASIR -->
+    <header class="kasir-topbar">
+      <div class="kasir-brand">
+        <img src="assets/logo-baru-clean.png" alt="Getsee" style="height: 34px; filter: brightness(0) invert(1);">
+        <h1>Kasir & Kitchen POS</h1>
+        <span class="badge">Live Terminal</span>
+      </div>
+      <div class="kasir-nav-tabs">
+        <button class="kasir-tab-btn active" onclick="switchKasirTab('kds')">📋 Antrean Pesanan (KDS)</button>
+        <button class="kasir-tab-btn" onclick="switchKasirTab('pos')">🛒 Buat Pesanan (POS)</button>
+        <button class="kasir-tab-btn" onclick="switchKasirTab('stock')">📦 Kelola Stok Menu</button>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <button type="button" class="btn-kds btn-receipt" onclick="loadKasirOrders()">🔄 Refresh</button>
+        <a href="index.html" class="btn-kds" style="background: rgba(255,255,255,0.18); color:#fff; text-decoration:none;">Buka Toko Web ↗</a>
+      </div>
+    </header>
+
+    <!-- STATISTIK HARI INI -->
+    <section class="kasir-stats-row">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <small>Total Omset Hari Ini</small>
+          <strong id="statOmset">Rp0</strong>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">☕</div>
+        <div class="stat-info">
+          <small>Total Pesanan Selesai</small>
+          <strong id="statOrdersDone">0 Pesanan</strong>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+          <small>Antrean Sedang Diproses</small>
+          <strong id="statActiveQueue">0 Antrean</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 1: KDS / ANTREAN PESANAN KASIR -->
+    <main id="viewKds" class="kasir-view">
+      <div class="kds-board">
+        <!-- Kolom 1: Pesanan Masuk (Paid / Waiting) -->
+        <div class="kds-column">
+          <div class="kds-col-header">
+            <h3>🟡 Pesanan Masuk</h3>
+            <span class="count" id="countPaid">0</span>
+          </div>
+          <div class="kds-order-list" id="listPaid"></div>
+        </div>
+
+        <!-- Kolom 2: Sedang Diracik Barista -->
+        <div class="kds-column">
+          <div class="kds-col-header">
+            <h3>🔵 Sedang Diracik Barista</h3>
+            <span class="count" id="countBrewing">0</span>
+          </div>
+          <div class="kds-order-list" id="listBrewing"></div>
+        </div>
+
+        <!-- Kolom 3: Siap Diambil di Counter -->
+        <div class="kds-column">
+          <div class="kds-col-header">
+            <h3>🟢 Siap Diambil di Counter</h3>
+            <span class="count" id="countReady">0</span>
+          </div>
+          <div class="kds-order-list" id="listReady"></div>
+        </div>
+
+        <!-- Kolom 4: Selesai / Arsip -->
+        <div class="kds-column">
+          <div class="kds-col-header">
+            <h3>⚪ Selesai (Completed)</h3>
+            <span class="count" id="countDone">0</span>
+          </div>
+          <div class="kds-order-list" id="listDone"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- VIEW 2: POS OFFLINE / WALK-IN -->
+    <main id="viewPos" class="kasir-view" style="display: none;">
+      <div class="pos-view">
+        <div>
+          <h2 style="font-size: 18px; margin-bottom: 14px; font-weight: 800;">Pilih Menu Walk-in / Dine-in</h2>
+          <div class="pos-menu-grid" id="posMenuGrid"></div>
+        </div>
+        <aside class="pos-cart-panel">
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">Pesanan Meja Kasir</h3>
+          <div style="display: grid; gap: 8px;">
+            <input type="text" id="posCustomerName" placeholder="Nama Pelanggan (opsional)" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd; font-size: 13px;">
+            <input type="text" id="posTableNumber" placeholder="Nomor Meja (Kosongkan jika Takeaway)" style="padding: 10px; border-radius: 8px; border: 1px solid #ccd; font-size: 13px;">
+          </div>
+          <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;" id="posCartItems">
+            <p style="color: #607089; font-size: 13px; text-align: center; margin-top: 20px;">Belum ada item dipilih.</p>
+          </div>
+          <div style="border-top: 1px solid #eee; padding-top: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 800;">Total</span>
+            <strong id="posTotal" style="color: #00438D; font-size: 18px;">Rp0</strong>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-kds" style="flex: 1; background: #12b76a; color: #fff; padding: 12px;" onclick="submitPosOrder('CASH')">Bayar Tunai</button>
+            <button type="button" class="btn-kds" style="flex: 1; background: #00438D; color: #fff; padding: 12px;" onclick="submitPosOrder('QRIS')">Bayar QRIS</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- VIEW 3: KELOLA STOK MENU -->
+    <main id="viewStock" class="kasir-view" style="display: none;">
+      <div style="background: #fff; border-radius: 18px; padding: 24px; border: 1px solid rgba(0,67,141,0.12);">
+        <h2 style="font-size: 18px; margin-bottom: 6px; font-weight: 800;">Ketersediaan Stok Menu Cafe</h2>
+        <p style="color: #607089; font-size: 13px; margin-bottom: 20px;">Matikan sakelar jika menu habis (Sold Out). Status akan tersimpan di sistem.</p>
+        <div class="stock-grid" id="stockGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- POP-UP STRUK THERMAL -->
+  <div class="receipt-modal-overlay" id="receiptModal">
+    <div class="receipt-paper">
+      <h2>GETSEE COFFEE & DONUTS</h2>
+      <p style="text-align: center;">Jl. Coffee Artisan No. 7 &bull; Bandung</p>
+      <div class="receipt-divider"></div>
+      <p>Kode: <strong id="recCode">GET-000000</strong></p>
+      <p>Waktu: <span id="recDate">19/10/2026 18:00</span></p>
+      <p>Pelanggan: <span id="recCustomer">Tamu</span></p>
+      <div class="receipt-divider"></div>
+      <div id="recItems" style="font-size: 12px; display: flex; flex-direction: column; gap: 4px;"></div>
+      <div class="receipt-divider"></div>
+      <div style="display: flex; justify-content: space-between; font-weight: 900;">
+        <span>TOTAL</span>
+        <span id="recTotal">Rp0</span>
+      </div>
+      <p style="font-size: 11px; margin-top: 4px;">Metode: <span id="recMethod">QRIS</span></p>
+      <div class="receipt-divider"></div>
+      <p style="text-align: center; font-size: 11px;">Terima kasih atas pesanan Anda!<br>Simpan struk ini untuk pengambilan.</p>
+      <div style="margin-top: 16px; display: flex; gap: 8px;">
+        <button type="button" class="btn-kds btn-brew" style="flex:1;" onclick="window.print()">🖨️ Cetak</button>
+        <button type="button" class="btn-kds" style="background:#eee;" onclick="closeReceipt()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js?v=2026_fullstack"></script>
+  <script src="js/menu-data.js?v=2026_fullstack"></script>
+  <script>
+    'use strict';
+
+    let allOrders = [];
+    let posCart = [];
+    let stockData = {};
+
+    function switchKasirTab(tab) {
+      document.querySelectorAll('.kasir-tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.getElementById('viewKds').style.display = tab === 'kds' ? 'block' : 'none';
+      document.getElementById('viewPos').style.display = tab === 'pos' ? 'block' : 'none';
+      document.getElementById('viewStock').style.display = tab === 'stock' ? 'block' : 'none';
+
+      if (tab === 'pos') renderPosMenus();
+      if (tab === 'stock') renderStockManager();
+    }
+
+    function formatRupiah(val) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+    }
+
+    // 1. LOAD & RENDER KDS ORDERS
+    async function loadKasirOrders() {
+      const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+      try {
+        const res = await fetch(`${baseUrl}/api/cashier/orders`);
+        const data = await res.json();
+        if (data.success) {
+          allOrders = data.orders || [];
+        }
+      } catch (err) {
+        // Fallback jika offline: baca dari localStorage lokal
+        try {
+          allOrders = JSON.parse(localStorage.getItem('getseeOrders')) || [];
+        } catch(e) { allOrders = []; }
+      }
+      renderKdsBoard();
+      updateStatistics();
+    }
+
+    function renderKdsBoard() {
+      const listPaid = document.getElementById('listPaid');
+      const listBrewing = document.getElementById('listBrewing');
+      const listReady = document.getElementById('listReady');
+      const listDone = document.getElementById('listDone');
+
+      listPaid.innerHTML = '';
+      listBrewing.innerHTML = '';
+      listReady.innerHTML = '';
+      listDone.innerHTML = '';
+
+      let cPaid = 0, cBrew = 0, cReady = 0, cDone = 0;
+
+      allOrders.forEach(o => {
+        const status = o.status || 'paid';
+        const card = createKdsOrderCard(o);
+
+        if (status === 'paid') {
+          listPaid.appendChild(card);
+          cPaid++;
+        } else if (status === 'brewing') {
+          listBrewing.appendChild(card);
+          cBrew++;
+        } else if (status === 'ready') {
+          listReady.appendChild(card);
+          cReady++;
+        } else {
+          listDone.appendChild(card);
+          cDone++;
+        }
+      });
+
+      document.getElementById('countPaid').textContent = cPaid;
+      document.getElementById('countBrewing').textContent = cBrew;
+      document.getElementById('countReady').textContent = cReady;
+      document.getElementById('countDone').textContent = cDone;
+    }
+
+    function createKdsOrderCard(o) {
+      const card = document.createElement('div');
+      card.className = 'kds-order-card';
+
+      const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items || '[]') : []);
+      const itemsHtml = items.map(it => `
+        <div class="kds-item-line">
+          • ${it.qty || 1}x ${it.name}
+          ${it.temp ? `<span class="kds-custom-badge">↳ Suhu: ${it.temp} | Gula: ${it.sugar || 'Normal'}</span>` : ''}
+          ${it.notes ? `<span class="kds-custom-badge">↳ Catatan: "${it.notes}"</span>` : ''}
+        </div>
+      `).join('');
+
+      const timeFormatted = o.created_at ? new Date(o.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
+      const status = o.status || 'paid';
+
+      let actionButtons = '';
+      if (status === 'paid') {
+        actionButtons = `<button class="btn-kds btn-brew" onclick="updateOrderStatus('${o.pickup_code}', 'brewing')">Racik Kopi ☕</button>`;
+      } else if (status === 'brewing') {
+        actionButtons = `<button class="btn-kds btn-ready" onclick="updateOrderStatus('${o.pickup_code}', 'ready')">Siap Diambil 🔔</button>`;
+      } else if (status === 'ready') {
+        actionButtons = `<button class="btn-kds btn-done" onclick="updateOrderStatus('${o.pickup_code}', 'completed')">Selesai ✓</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="kds-order-top">
+          <span class="kds-code">${o.pickup_code}</span>
+          <span class="kds-time">${timeFormatted}</span>
+        </div>
+        <div class="kds-customer">👤 ${o.email || 'Pelanggan Tamu'} &bull; ${o.payment_method || 'QRIS'}</div>
+        <div class="kds-items">${itemsHtml}</div>
+        <div class="kds-order-bottom">
+          <strong style="color:#00438D; font-size: 14px;">${formatRupiah(o.total_amount)}</strong>
+          <div class="kds-actions">
+            <button class="btn-kds btn-receipt" onclick='printReceipt(${JSON.stringify(o)})'>Struk 🖨️</button>
+            ${actionButtons}
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    async function updateOrderStatus(pickupCode, nextStatus) {
+      const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+      try {
+        await fetch(`${baseUrl}/api/cashier/orders/${pickupCode}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: nextStatus })
+        });
+      } catch (e) {}
+
+      // Update di memori & refresh
+      const found = allOrders.find(o => o.pickup_code === pickupCode);
+      if (found) found.status = nextStatus;
+      renderKdsBoard();
+      updateStatistics();
+    }
+
+    function updateStatistics() {
+      let totalOmset = 0;
+      let doneCount = 0;
+      let activeCount = 0;
+
+      allOrders.forEach(o => {
+        totalOmset += Number(o.total_amount || 0);
+        if (o.status === 'completed') doneCount++;
+        else activeCount++;
+      });
+
+      document.getElementById('statOmset').textContent = formatRupiah(totalOmset);
+      document.getElementById('statOrdersDone').textContent = `${doneCount} Pesanan`;
+      document.getElementById('statActiveQueue').textContent = `${activeCount} Antrean`;
+    }
+
+    // 2. POS OFFLINE WALK-IN
+    function renderPosMenus() {
+      const grid = document.getElementById('posMenuGrid');
+      if (!grid || !window.menuData) return;
+
+      let allItems = [];
+      Object.keys(window.menuData).forEach(cat => {
+        window.menuData[cat].items.forEach(it => {
+          allItems.push({ ...it, category: cat });
+        });
+      });
+
+      grid.innerHTML = allItems.map(it => `
+        <div class="pos-item-card" onclick='addPosCartItem(${JSON.stringify(it)})'>
+          <img src="${it.image || 'assets/logo.png'}" alt="${it.name}">
+          <strong style="display:block; font-size:13px; color:#071831;">${it.name}</strong>
+          <span style="color:#00438D; font-weight:800; font-size:12px;">${it.price}</span>
+        </div>
+      `).join('');
+    }
+
+    function addPosCartItem(item) {
+      const found = posCart.find(i => i.name === item.name);
+      if (found) {
+        found.qty += 1;
+      } else {
+        const val = Number(String(item.price || '').replace(/\D/g, '')) * (String(item.price).toUpperCase().includes('K') ? 1000 : 1);
+        posCart.push({ ...item, qty: 1, value: val });
+      }
+      renderPosCart();
+    }
+
+    function renderPosCart() {
+      const container = document.getElementById('posCartItems');
+      const totalEl = document.getElementById('posTotal');
+
+      if (!posCart.length) {
+        container.innerHTML = '<p style="color: #607089; font-size: 13px; text-align: center; margin-top: 20px;">Belum ada item dipilih.</p>';
+        totalEl.textContent = 'Rp0';
+        return;
+      }
+
+      let total = 0;
+      container.innerHTML = posCart.map((it, idx) => {
+        total += it.value * it.qty;
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#f8faff; padding:8px 12px; border-radius:10px;">
+            <div>
+              <strong style="font-size:13px;">${it.name}</strong>
+              <small style="display:block; color:#607089;">${it.qty}x ${formatRupiah(it.value)}</small>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-kds" onclick="posCart[${idx}].qty > 1 ? posCart[${idx}].qty-- : posCart.splice(${idx}, 1); renderPosCart();">-</button>
+              <button class="btn-kds" onclick="posCart[${idx}].qty++; renderPosCart();">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      totalEl.textContent = formatRupiah(total);
+    }
+
+    async function submitPosOrder(method) {
+      if (!posCart.length) return alert('Keranjang kasir masih kosong!');
+      const name = document.getElementById('posCustomerName').value.trim();
+      const table = document.getElementById('posTableNumber').value.trim();
+      const total = posCart.reduce((s, i) => s + (i.value * i.qty), 0);
+
+      const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+      try {
+        const res = await fetch(`${baseUrl}/api/cashier/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_name: name,
+            table_number: table,
+            items: posCart,
+            total_amount: total,
+            payment_method: method
+          })
+        });
+        const data = await res.json();
+        alert(`Pesanan Kasir Berhasil! Kode: ${data.order?.pickup_code || 'POS-ORDER'}`);
+        posCart = [];
+        renderPosCart();
+        loadKasirOrders();
+        switchKasirTab('kds');
+      } catch (e) {
+        alert('Gagal mencatat pesanan.');
+      }
+    }
+
+    // 3. KELOLA STOK MENU
+    function renderStockManager() {
+      const grid = document.getElementById('stockGrid');
+      if (!grid || !window.menuData) return;
+
+      let allItems = [];
+      Object.keys(window.menuData).forEach(cat => {
+        window.menuData[cat].items.forEach(it => {
+          allItems.push({ ...it, category: cat, id: `${cat}_${it.name.replace(/\s+/g, '_').toLowerCase()}` });
+        });
+      });
+
+      grid.innerHTML = allItems.map(it => {
+        const isAvailable = stockData[it.id] !== false;
+        return `
+          <div class="stock-card">
+            <div>
+              <strong style="font-size:14px; display:block;">${it.name}</strong>
+              <small style="color:#607089;">Kategori: ${it.category.toUpperCase()}</small>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="toggleStock('${it.id}', '${it.name}', '${it.category}', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleStock(id, name, category, isAvailable) {
+      stockData[id] = isAvailable;
+      const baseUrl = (window.GETSEE_CONFIG && window.GETSEE_CONFIG.API_BASE_URL) || '';
+      try {
+        await fetch(`${baseUrl}/api/menu/stock/toggle`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, name, category, is_available: isAvailable })
+        });
+      } catch(e) {}
+    }
+
+    // 4. PRINT RECEIPT
+    function printReceipt(o) {
+      document.getElementById('recCode').textContent = o.pickup_code;
+      document.getElementById('recDate').textContent = o.created_at ? new Date(o.created_at).toLocaleString('id-ID') : '-';
+      document.getElementById('recCustomer').textContent = o.email || 'Pelanggan Tamu';
+      document.getElementById('recMethod').textContent = o.payment_method || 'QRIS';
+      document.getElementById('recTotal').textContent = formatRupiah(o.total_amount);
+
+      const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items || '[]') : []);
+      document.getElementById('recItems').innerHTML = items.map(it => `
+        <div style="display:flex; justify-content:space-between;">
+          <span>${it.qty || 1}x ${it.name}</span>
+          <span>${formatRupiah(it.value ? it.value * (it.qty || 1) : 0)}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('receiptModal').classList.add('open');
+    }
+
+    function closeReceipt() {
+      document.getElementById('receiptModal').classList.remove('open');
+    }
+
+    // Auto-refresh orders every 10 seconds
+    setInterval(loadKasirOrders, 10000);
+    document.addEventListener('DOMContentLoaded', loadKasirOrders);
+  </script>
+</body>
+</html>
