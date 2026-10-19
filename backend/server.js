@@ -342,12 +342,17 @@ app.post('/api/cashier/verify-pin', (req, res) => {
   res.status(401).json({ success: false, message: 'PIN Kasir salah! Hubungi Supervisor Cafe.' });
 });
 
-// Ambil semua antrean pesanan untuk kasir
+// Ambil semua antrean pesanan untuk kasir (opsional filter tanggal ?date=YYYY-MM-DD)
 app.get('/api/cashier/orders', requireCashierAuth, async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT * FROM orders ORDER BY created_at DESC LIMIT 100'
-    );
+    const { date } = req.query;
+    let query = 'SELECT * FROM orders ORDER BY created_at DESC LIMIT 250';
+    let params = [];
+    if (date) {
+      query = 'SELECT * FROM orders WHERE DATE(created_at) = $1 ORDER BY created_at DESC LIMIT 250';
+      params = [date];
+    }
+    const result = await pool.query(query, params);
     res.json({
       success: true,
       orders: result.rows

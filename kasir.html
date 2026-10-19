@@ -20,8 +20,10 @@
     }
     .kasir-topbar {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
       background: #00438D;
       color: #ffffff;
       padding: 16px 24px;
@@ -33,25 +35,29 @@
       display: flex;
       align-items: center;
       gap: 14px;
+      flex-shrink: 0;
     }
     .kasir-brand h1 {
-      font-size: 20px;
+      font-size: 19px;
       margin: 0;
       font-family: 'Montserrat', sans-serif;
       font-weight: 800;
       font-style: italic;
+      color: #fff;
     }
     .kasir-brand span.badge {
       background: #FFF006;
       color: #071831;
-      padding: 3px 10px;
+      padding: 4px 10px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
+      letter-spacing: 0.4px;
     }
     .kasir-nav-tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       background: rgba(255, 255, 255, 0.12);
       padding: 6px;
@@ -61,17 +67,98 @@
       background: transparent;
       border: 0;
       color: #ffffff;
-      padding: 8px 18px;
+      padding: 9px 18px;
       border-radius: 10px;
       font-weight: 800;
       font-size: 13px;
       cursor: pointer;
       transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kasir-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
     }
     .kasir-tab-btn.active {
       background: #FFF006;
       color: #071831;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }
+    .kasir-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .kasir-user-badge {
+      font-size: 12.5px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .kasir-action-btn {
+      border: 0;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .kasir-action-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    /* KOTAK KECIL STATUS BADGE */
+    .status-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      line-height: 1.2;
+      border: 1px solid transparent;
+    }
+    .status-box.status-paid {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+    .status-box.status-brewing {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+    .status-box.status-ready {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+    .status-box.status-completed {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
     .kasir-stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -110,11 +197,20 @@
       font-weight: 900;
     }
 
-    /* KDS BOARD (Kitchen / Counter Queue) */
+    /* KDS BOARD (Active 3-Column Queue) */
     .kds-board {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(3, minmax(280px, 1fr));
       gap: 20px;
+    }
+    @media (max-width: 992px) {
+      .kds-board {
+        grid-template-columns: 1fr;
+      }
+      .kds-column {
+        height: auto;
+        min-height: 400px;
+      }
     }
     .kds-column {
       background: #ffffff;
@@ -319,6 +415,125 @@
     input:checked + .slider { background-color: #12b76a; }
     input:checked + .slider:before { transform: translateX(22px); }
 
+    /* TAB HISTORI PESANAN HARIAN */
+    .history-panel {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .history-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eef2f6;
+    }
+    .history-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .history-date-picker {
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 13px;
+      font-weight: 700;
+      color: #071831;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+    }
+    .history-date-picker:focus {
+      border-color: #00438D;
+    }
+    .history-btn-quick {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #475569;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .history-btn-quick:hover, .history-btn-quick.active {
+      background: #00438D;
+      color: #fff;
+      border-color: #00438D;
+    }
+    .history-search-input {
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 13px;
+      min-width: 220px;
+      outline: none;
+    }
+    .history-search-input:focus {
+      border-color: #00438D;
+    }
+    .history-stats-mini {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .history-stat-box {
+      background: #f8fbff;
+      border: 1px solid rgba(0, 67, 141, 0.12);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+    .history-stat-box small {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .history-stat-box strong {
+      font-size: 18px;
+      font-weight: 900;
+      color: #00438D;
+    }
+    .history-table-container {
+      overflow-x: auto;
+      border: 1px solid #edf2f7;
+      border-radius: 12px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    .history-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 800;
+      padding: 12px 16px;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+    }
+    .history-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+    .history-table tr:hover td {
+      background: #f8fbff;
+    }
+
     /* STRUK PRINT MODAL */
     .receipt-modal-overlay {
       position: fixed; inset: 0; background: rgba(7, 24, 49, 0.65);
@@ -375,20 +590,23 @@
     <!-- TOPBAR KASIR -->
     <header class="kasir-topbar">
       <div class="kasir-brand">
-        <img src="assets/logo-baru-clean.png" alt="Getsee" style="height: 34px; filter: brightness(0) invert(1);">
-        <h1>Kasir & Kitchen POS</h1>
-        <span class="badge">Live Terminal</span>
+        <img src="assets/logo-baru-clean.png" alt="Getsee" style="height: 36px; filter: brightness(0) invert(1);">
+        <div>
+          <h1 style="line-height:1.2;">Kasir & Kitchen POS</h1>
+          <span class="badge">Live Terminal</span>
+        </div>
       </div>
       <div class="kasir-nav-tabs">
-        <button class="kasir-tab-btn active" onclick="switchKasirTab('kds')">📋 Antrean Pesanan (KDS)</button>
-        <button class="kasir-tab-btn" onclick="switchKasirTab('pos')">🛒 Buat Pesanan (POS)</button>
-        <button class="kasir-tab-btn" onclick="switchKasirTab('stock')">📦 Kelola Stok Menu</button>
+        <button class="kasir-tab-btn active" id="tabBtnKds" onclick="switchKasirTab('kds')">📋 Antrean Aktif (KDS)</button>
+        <button class="kasir-tab-btn" id="tabBtnHistory" onclick="switchKasirTab('history')">📜 Histori Pesanan (Harian)</button>
+        <button class="kasir-tab-btn" id="tabBtnPos" onclick="switchKasirTab('pos')">🛒 Buat Pesanan (POS)</button>
+        <button class="kasir-tab-btn" id="tabBtnStock" onclick="switchKasirTab('stock')">📦 Kelola Stok Menu</button>
       </div>
-      <div style="display: flex; gap: 10px; align-items: center;">
-        <span id="cashierUserLabel" style="font-size: 12.5px; font-weight: 700; background: rgba(255,255,255,0.14); padding: 6px 12px; border-radius: 999px;">🔒 Terkunci</span>
-        <button type="button" class="btn-kds btn-receipt" onclick="loadKasirOrders()">🔄 Refresh</button>
-        <button type="button" class="btn-kds" style="background:#b42318; color:#fff;" onclick="logoutCashier()">Keluar Kasir ✕</button>
-        <a href="index.html" class="btn-kds" style="background: rgba(255,255,255,0.18); color:#fff; text-decoration:none;">Buka Toko Web ↗</a>
+      <div class="kasir-actions">
+        <span id="cashierUserLabel" class="kasir-user-badge">🔒 Terkunci</span>
+        <button type="button" class="kasir-action-btn" style="background:#eef4ff; color:#00438D;" onclick="loadKasirOrders()">🔄 Refresh</button>
+        <button type="button" class="kasir-action-btn" style="background:#fee2e2; color:#b91c1c;" onclick="logoutCashier()">Keluar Kasir ✕</button>
+        <a href="index.html" class="kasir-action-btn" style="background: rgba(255,255,255,0.18); color:#fff;">Buka Toko ↗</a>
       </div>
     </header>
 
@@ -417,7 +635,7 @@
       </div>
     </section>
 
-    <!-- VIEW 1: KDS / ANTREAN PESANAN KASIR -->
+    <!-- VIEW 1: KDS / ANTREAN PESANAN KASIR (3 KOLOM AKTIF) -->
     <main id="viewKds" class="kasir-view">
       <div class="kds-board">
         <!-- Kolom 1: Pesanan Masuk (Paid / Waiting) -->
@@ -446,19 +664,69 @@
           </div>
           <div class="kds-order-list" id="listReady"></div>
         </div>
+      </div>
+    </main>
 
-        <!-- Kolom 4: Selesai / Arsip -->
-        <div class="kds-column">
-          <div class="kds-col-header">
-            <h3>⚪ Selesai (Completed)</h3>
-            <span class="count" id="countDone">0</span>
+    <!-- VIEW 2: HISTORI PESANAN (HARIAN) -->
+    <main id="viewHistory" class="kasir-view" style="display: none;">
+      <div class="history-panel">
+        <div class="history-toolbar">
+          <div class="history-filters">
+            <span style="font-size: 13px; font-weight: 800; color: #071831;">📅 Filter Tanggal:</span>
+            <input type="date" id="historyDateInput" class="history-date-picker" onchange="renderDailyHistory()">
+            <button type="button" class="history-btn-quick active" id="btnQuickToday" onclick="setHistoryFilterDate('today')">Hari Ini</button>
+            <button type="button" class="history-btn-quick" id="btnQuickYesterday" onclick="setHistoryFilterDate('yesterday')">Kemarin</button>
+            <button type="button" class="history-btn-quick" id="btnQuickAll" onclick="setHistoryFilterDate('all')">Semua Selesai</button>
           </div>
-          <div class="kds-order-list" id="listDone"></div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <input type="text" id="historySearch" placeholder="🔍 Cari kode atau nama pemesan..." class="history-search-input" oninput="renderDailyHistory()">
+            <button type="button" class="kasir-action-btn" style="background: #00438D; color: #fff;" onclick="printDailyRecap()">🖨️ Cetak Rekap Harian</button>
+          </div>
+        </div>
+
+        <!-- STATISTIK MINI HARIAN -->
+        <div class="history-stats-mini">
+          <div class="history-stat-box">
+            <small>Omset Pada Tanggal Terpilih</small>
+            <strong id="historyStatOmset">Rp0</strong>
+          </div>
+          <div class="history-stat-box">
+            <small>Total Transaksi Selesai</small>
+            <strong id="historyStatOrders">0 Pesanan</strong>
+          </div>
+          <div class="history-stat-box">
+            <small>Pembayaran QRIS</small>
+            <strong id="historyStatQris">Rp0</strong>
+          </div>
+          <div class="history-stat-box">
+            <small>Pembayaran Tunai / POS</small>
+            <strong id="historyStatCash">Rp0</strong>
+          </div>
+        </div>
+
+        <!-- TABEL HISTORI PESANAN -->
+        <div class="history-table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Kode Pesanan</th>
+                <th>Status</th>
+                <th>Pelanggan / Meja</th>
+                <th>Rincian Menu Dipesan</th>
+                <th>Total & Metode</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
         </div>
       </div>
     </main>
 
-    <!-- VIEW 2: POS OFFLINE / WALK-IN -->
+    <!-- VIEW 3: POS OFFLINE / WALK-IN -->
     <main id="viewPos" class="kasir-view" style="display: none;">
       <div class="pos-view">
         <div>
@@ -486,7 +754,7 @@
       </div>
     </main>
 
-    <!-- VIEW 3: KELOLA STOK MENU -->
+    <!-- VIEW 4: KELOLA STOK MENU -->
     <main id="viewStock" class="kasir-view" style="display: none;">
       <div style="background: #fff; border-radius: 18px; padding: 24px; border: 1px solid rgba(0,67,141,0.12);">
         <h2 style="font-size: 18px; margin-bottom: 6px; font-weight: 800;">Ketersediaan Stok Menu Cafe</h2>
@@ -517,6 +785,10 @@
       <p style="text-align: center; font-size: 11px;">Terima kasih atas pesanan Anda!<br>Simpan struk ini untuk pengambilan.</p>
       <div style="margin-top: 16px; display: flex; gap: 8px;">
         <button type="button" class="btn-kds btn-brew" style="flex:1;" onclick="window.print()">🖨️ Cetak</button>
+        <button type="button" class="btn-kds" style="flex:1; background:#607089; color:#fff;" onclick="closeReceipt()">Tutup</button>
+      </div>
+    </div>
+  </div>
   <!-- POP-UP AUTENTIKASI PIN KASIR / BARISTA -->
   <div class="cashier-auth-overlay" id="cashierAuthModal">
     <div class="cashier-auth-card">
@@ -648,18 +920,37 @@
 
     function switchKasirTab(tab) {
       document.querySelectorAll('.kasir-tab-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      const tabMap = {
+        kds: 'tabBtnKds',
+        history: 'tabBtnHistory',
+        pos: 'tabBtnPos',
+        stock: 'tabBtnStock'
+      };
+      if (tabMap[tab] && document.getElementById(tabMap[tab])) {
+        document.getElementById(tabMap[tab]).classList.add('active');
+      }
 
       document.getElementById('viewKds').style.display = tab === 'kds' ? 'block' : 'none';
+      document.getElementById('viewHistory').style.display = tab === 'history' ? 'block' : 'none';
       document.getElementById('viewPos').style.display = tab === 'pos' ? 'block' : 'none';
       document.getElementById('viewStock').style.display = tab === 'stock' ? 'block' : 'none';
 
+      if (tab === 'history') renderDailyHistory();
       if (tab === 'pos') renderPosMenus();
       if (tab === 'stock') renderStockManager();
     }
 
     function formatRupiah(val) {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+    }
+
+    function getLocalDateString(dateInput) {
+      const d = dateInput ? new Date(dateInput) : new Date();
+      if (isNaN(d.getTime())) return '';
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     // 1. LOAD & RENDER KDS ORDERS
@@ -683,6 +974,7 @@
         } catch(e) { allOrders = []; }
       }
       renderKdsBoard();
+      renderDailyHistory();
       updateStatistics();
     }
 
@@ -690,17 +982,20 @@
       const listPaid = document.getElementById('listPaid');
       const listBrewing = document.getElementById('listBrewing');
       const listReady = document.getElementById('listReady');
-      const listDone = document.getElementById('listDone');
 
       listPaid.innerHTML = '';
       listBrewing.innerHTML = '';
       listReady.innerHTML = '';
-      listDone.innerHTML = '';
 
-      let cPaid = 0, cBrew = 0, cReady = 0, cDone = 0;
+      let cPaid = 0, cBrew = 0, cReady = 0;
 
       allOrders.forEach(o => {
         const status = o.status || 'paid';
+        if (status === 'completed' || status === 'canceled') {
+          // Pesanan yang sudah selesai atau dibatalkan TIDAK ditampilkan di KDS aktif
+          return;
+        }
+
         const card = createKdsOrderCard(o);
 
         if (status === 'paid') {
@@ -712,16 +1007,17 @@
         } else if (status === 'ready') {
           listReady.appendChild(card);
           cReady++;
-        } else {
-          listDone.appendChild(card);
-          cDone++;
         }
       });
 
       document.getElementById('countPaid').textContent = cPaid;
       document.getElementById('countBrewing').textContent = cBrew;
       document.getElementById('countReady').textContent = cReady;
-      document.getElementById('countDone').textContent = cDone;
+
+      // Empty states untuk masing-masing kolom
+      if (cPaid === 0) listPaid.innerHTML = '<div style="text-align:center; padding:24px 10px; color:#94a3b8; font-size:13px; font-weight:600;">Tidak ada pesanan masuk</div>';
+      if (cBrew === 0) listBrewing.innerHTML = '<div style="text-align:center; padding:24px 10px; color:#94a3b8; font-size:13px; font-weight:600;">Tidak ada kopi sedang diracik</div>';
+      if (cReady === 0) listReady.innerHTML = '<div style="text-align:center; padding:24px 10px; color:#94a3b8; font-size:13px; font-weight:600;">Tidak ada pesanan siap ambil</div>';
     }
 
     function createKdsOrderCard(o) {
@@ -740,18 +1036,31 @@
       const timeFormatted = o.created_at ? new Date(o.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
       const status = o.status || 'paid';
 
+      // Status Tag (Kotak Kecil Rapi)
+      const statusConfig = {
+        paid: { label: 'Masuk', class: 'status-paid', icon: '🟡' },
+        brewing: { label: 'Diracik', class: 'status-brewing', icon: '🔵' },
+        ready: { label: 'Siap Ambil', class: 'status-ready', icon: '🟢' },
+        completed: { label: 'Selesai', class: 'status-completed', icon: '⚪' }
+      };
+      const st = statusConfig[status] || statusConfig.paid;
+      const statusBoxHtml = `<span class="status-box ${st.class}">${st.icon} ${st.label}</span>`;
+
       let actionButtons = '';
       if (status === 'paid') {
         actionButtons = `<button class="btn-kds btn-brew" onclick="updateOrderStatus('${o.pickup_code}', 'brewing')">Racik Kopi ☕</button>`;
       } else if (status === 'brewing') {
         actionButtons = `<button class="btn-kds btn-ready" onclick="updateOrderStatus('${o.pickup_code}', 'ready')">Siap Diambil 🔔</button>`;
       } else if (status === 'ready') {
-        actionButtons = `<button class="btn-kds btn-done" onclick="updateOrderStatus('${o.pickup_code}', 'completed')">Selesai ✓</button>`;
+        actionButtons = `<button class="btn-kds btn-done" style="background:#12b76a; color:#fff;" onclick="updateOrderStatus('${o.pickup_code}', 'completed')">Selesaikan ✓</button>`;
       }
 
       card.innerHTML = `
         <div class="kds-order-top">
-          <span class="kds-code">${o.pickup_code}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="kds-code">${o.pickup_code}</span>
+            ${statusBoxHtml}
+          </div>
           <span class="kds-time">${timeFormatted}</span>
         </div>
         <div class="kds-customer">👤 ${o.email || 'Pelanggan Tamu'} &bull; ${o.payment_method || 'QRIS'}</div>
@@ -781,6 +1090,7 @@
       const found = allOrders.find(o => o.pickup_code === pickupCode);
       if (found) found.status = nextStatus;
       renderKdsBoard();
+      renderDailyHistory();
       updateStatistics();
     }
 
@@ -798,6 +1108,218 @@
       document.getElementById('statOmset').textContent = formatRupiah(totalOmset);
       document.getElementById('statOrdersDone').textContent = `${doneCount} Pesanan`;
       document.getElementById('statActiveQueue').textContent = `${activeCount} Antrean`;
+    }
+
+    // HISTORI PESANAN (HARIAN) LOGIC
+    function initHistoryDateInput() {
+      const input = document.getElementById('historyDateInput');
+      if (input && !input.value) {
+        input.value = getLocalDateString(new Date());
+      }
+    }
+
+    function setHistoryFilterDate(mode) {
+      const input = document.getElementById('historyDateInput');
+      document.querySelectorAll('.history-btn-quick').forEach(btn => btn.classList.remove('active'));
+
+      if (mode === 'today') {
+        input.value = getLocalDateString(new Date());
+        document.getElementById('btnQuickToday').classList.add('active');
+      } else if (mode === 'yesterday') {
+        const y = new Date();
+        y.setDate(y.getDate() - 1);
+        input.value = getLocalDateString(y);
+        document.getElementById('btnQuickYesterday').classList.add('active');
+      } else if (mode === 'all') {
+        input.value = '';
+        document.getElementById('btnQuickAll').classList.add('active');
+      }
+
+      renderDailyHistory();
+    }
+
+    function renderDailyHistory() {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
+
+      const dateInput = document.getElementById('historyDateInput');
+      const searchInput = document.getElementById('historySearch');
+      const selectedDate = dateInput ? dateInput.value : '';
+      const searchQuery = (searchInput ? searchInput.value : '').trim().toLowerCase();
+
+      // Filter pesanan yang berstatus 'completed'
+      let completedOrders = allOrders.filter(o => o.status === 'completed');
+
+      // Filter berdasarkan tanggal jika dipilih
+      if (selectedDate) {
+        completedOrders = completedOrders.filter(o => {
+          const orderDate = getLocalDateString(o.created_at);
+          return orderDate === selectedDate;
+        });
+      }
+
+      // Filter berdasarkan query pencarian
+      if (searchQuery) {
+        completedOrders = completedOrders.filter(o => {
+          const codeMatch = String(o.pickup_code || '').toLowerCase().includes(searchQuery);
+          const customerMatch = String(o.email || '').toLowerCase().includes(searchQuery);
+          const itemsStr = typeof o.items === 'string' ? o.items : JSON.stringify(o.items || []);
+          const itemMatch = itemsStr.toLowerCase().includes(searchQuery);
+          return codeMatch || customerMatch || itemMatch;
+        });
+      }
+
+      // Urutkan dari yang paling baru
+      completedOrders.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+      // Hitung ringkasan harian
+      let dailyTotal = 0;
+      let qrisTotal = 0;
+      let cashTotal = 0;
+
+      completedOrders.forEach(o => {
+        const amt = Number(o.total_amount || 0);
+        dailyTotal += amt;
+        const method = String(o.payment_method || '').toUpperCase();
+        if (method.includes('CASH') || method.includes('TUNAI')) {
+          cashTotal += amt;
+        } else {
+          qrisTotal += amt;
+        }
+      });
+
+      // Update widget ringkasan statistik histori
+      const elOmset = document.getElementById('historyStatOmset');
+      const elOrders = document.getElementById('historyStatOrders');
+      const elQris = document.getElementById('historyStatQris');
+      const elCash = document.getElementById('historyStatCash');
+
+      if (elOmset) elOmset.textContent = formatRupiah(dailyTotal);
+      if (elOrders) elOrders.textContent = `${completedOrders.length} Pesanan`;
+      if (elQris) elQris.textContent = formatRupiah(qrisTotal);
+      if (elCash) elCash.textContent = formatRupiah(cashTotal);
+
+      // Render Baris Tabel
+      if (completedOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 40px 16px; color: #64748b;">
+              <div style="font-size: 32px; margin-bottom: 8px;">📭</div>
+              <strong style="display:block; font-size:14px; color:#1e293b;">Belum ada pesanan selesai</strong>
+              <small>${selectedDate ? `Tidak ada transaksi yang selesai pada tanggal ${selectedDate}.` : 'Belum ada transaksi selesai di sistem.'}</small>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = completedOrders.map(o => {
+        const timeFormatted = o.created_at ? new Date(o.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB' : '-';
+        const items = Array.isArray(o.items) ? o.items : (typeof o.items === 'string' ? JSON.parse(o.items || '[]') : []);
+        const itemsSummary = items.map(it => `
+          <div><strong>${it.qty || 1}x</strong> ${it.name} ${it.temp ? `<small style="color:#00438D;">(${it.temp})</small>` : ''}</div>
+        `).join('');
+
+        const isCash = String(o.payment_method || '').toUpperCase().includes('CASH');
+
+        return `
+          <tr>
+            <td style="font-weight: 700; white-space: nowrap; color: #475569;">${timeFormatted}</td>
+            <td>
+              <strong style="color: #00438D; font-size: 13.5px; letter-spacing: 0.5px;">${o.pickup_code}</strong>
+            </td>
+            <td>
+              <span class="status-box status-completed">⚪ SELESAI</span>
+            </td>
+            <td>
+              <strong style="font-size: 13px;">${o.email || 'Pelanggan Tamu'}</strong>
+            </td>
+            <td>
+              <div style="font-size: 12.5px; display: flex; flex-direction: column; gap: 2px;">
+                ${itemsSummary}
+              </div>
+            </td>
+            <td>
+              <strong style="color: #071831; display: block;">${formatRupiah(o.total_amount)}</strong>
+              <span style="display: inline-block; font-size: 10.5px; padding: 2px 6px; border-radius: 4px; font-weight: 800; background: ${isCash ? '#fef3c7; color:#b45309;' : '#e0f2fe; color:#0369a1;'}">
+                ${o.payment_method || 'QRIS'}
+              </span>
+            </td>
+            <td style="text-align: right; white-space: nowrap;">
+              <button class="btn-kds btn-receipt" onclick='printReceipt(${JSON.stringify(o)})'>🖨️ Struk</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function printDailyRecap() {
+      const dateInput = document.getElementById('historyDateInput');
+      const selectedDate = dateInput ? dateInput.value : getLocalDateString(new Date());
+      let completedOrders = allOrders.filter(o => o.status === 'completed');
+      if (selectedDate) {
+        completedOrders = completedOrders.filter(o => getLocalDateString(o.created_at) === selectedDate);
+      }
+
+      if (!completedOrders.length) {
+        alert('Tidak ada data pesanan selesai untuk dicetak pada tanggal ini.');
+        return;
+      }
+
+      const totalOmset = completedOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+      const printWindow = window.open('', '_blank');
+      const rowsHtml = completedOrders.map(o => `
+        <tr>
+          <td style="padding:6px; border-bottom:1px solid #ddd;">${o.created_at ? new Date(o.created_at).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '-'}</td>
+          <td style="padding:6px; border-bottom:1px solid #ddd;"><b>${o.pickup_code}</b></td>
+          <td style="padding:6px; border-bottom:1px solid #ddd;">${o.email || 'Pelanggan'}</td>
+          <td style="padding:6px; border-bottom:1px solid #ddd; text-align:right;">${formatRupiah(o.total_amount)} (${o.payment_method || 'QRIS'})</td>
+        </tr>
+      `).join('');
+
+      printWindow.document.write(\`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Rekap Harian - \${selectedDate}</title>
+          <style>
+            body { font-family: monospace, sans-serif; padding: 24px; color: #000; }
+            h2, h4 { margin: 4px 0; text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 13px; }
+            th { border-bottom: 2px solid #000; padding: 8px 6px; text-align: left; }
+            .total-row { border-top: 2px dashed #000; font-size: 15px; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>GETSEE COFFEE & DONUTS</h2>
+          <h4>LAPORAN REKAP TRANSAKSI HARIAN</h4>
+          <p style="text-align:center; font-size:12px;">Tanggal: \${selectedDate || 'Semua'} &bull; Dicetak: \${new Date().toLocaleString('id-ID')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Kode</th>
+                <th>Pemesan</th>
+                <th style="text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              \${rowsHtml}
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="3" style="padding:10px 6px;">TOTAL OMSET (\${completedOrders.length} Transaksi)</td>
+                <td style="padding:10px 6px; text-align:right;">\${formatRupiah(totalOmset)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          <script>
+            window.onload = function() { window.print(); }
+          <\/script>
+        </body>
+        </html>
+      \`);
+      printWindow.document.close();
     }
 
     // 2. POS OFFLINE WALK-IN
@@ -957,7 +1479,10 @@
 
     // Auto-refresh orders every 10 seconds jika sudah login
     setInterval(loadKasirOrders, 10000);
-    document.addEventListener('DOMContentLoaded', checkCashierSession);
+    document.addEventListener('DOMContentLoaded', () => {
+      initHistoryDateInput();
+      checkCashierSession();
+    });
   </script>
 </body>
 </html>
