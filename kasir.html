@@ -569,10 +569,16 @@
       display: grid; place-items: center; font-size: 28px; margin: 0 auto 16px;
     }
     .cashier-pin-display {
-      letter-spacing: 12px; font-size: 28px; font-weight: 900;
-      text-align: center; padding: 12px; border-radius: 12px;
+      letter-spacing: 14px; font-size: 30px; font-weight: 900;
+      text-align: center; padding: 12px; border-radius: 14px;
       border: 2px solid #00438D; width: 100%; box-sizing: border-box;
-      margin: 16px 0; background: #fbfdff; color: #00438D;
+      margin: 16px 0 10px; background: #ffffff; color: #00438D;
+      outline: none; cursor: text; transition: all 0.2s ease;
+      caret-color: #00438D;
+    }
+    .cashier-pin-display:focus {
+      border-color: #00438D;
+      box-shadow: 0 0 0 4px rgba(0, 67, 141, 0.18);
     }
     .cashier-pin-keypad {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;
@@ -796,7 +802,18 @@
       <h2 style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:20px; margin:0 0 6px;">Terminal Kasir Getsee</h2>
       <p style="font-size:13px; color:#607089; margin:0 0 16px;">Masukkan 4 digit PIN Kasir / Barista untuk membuka antrean dan omset.</p>
       
-      <input type="password" id="pinDisplay" class="cashier-pin-display" readonly placeholder="••••" maxlength="4">
+      <input 
+        type="password" 
+        id="pinDisplay" 
+        class="cashier-pin-display" 
+        placeholder="••••" 
+        maxlength="4" 
+        inputmode="numeric" 
+        pattern="[0-9]*" 
+        autocomplete="off" 
+        autofocus 
+        title="Ketik 4 digit PIN di keyboard atau klik keypad di bawah"
+      >
       <p id="pinError" style="color:#b42318; font-size:12px; font-weight:700; margin:4px 0 10px; min-height:18px;"></p>
 
       <div class="cashier-pin-keypad">
@@ -809,9 +826,14 @@
         <button type="button" class="btn-keypad" onclick="pressPin('7')">7</button>
         <button type="button" class="btn-keypad" onclick="pressPin('8')">8</button>
         <button type="button" class="btn-keypad" onclick="pressPin('9')">9</button>
-        <button type="button" class="btn-keypad action" onclick="clearPin()">C</button>
+        <button type="button" class="btn-keypad action" onclick="deletePin()" title="Hapus satu angka">⌫</button>
         <button type="button" class="btn-keypad" onclick="pressPin('0')">0</button>
         <button type="button" class="btn-keypad action" style="background:#00438D; color:#fff;" onclick="submitPin()">OK</button>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+        <button type="button" onclick="clearPin()" style="background:none; border:none; color:#607089; font-size:12px; cursor:pointer; font-weight:700; text-decoration:underline;">Reset / Hapus Semua (C)</button>
+        <span style="font-size:11.5px; color:#607089;">Bisa ketik keyboard langsung ⌨️</span>
       </div>
 
       <div style="margin-top:16px; border-top:1px dashed #ccd; padding-top:12px;">
@@ -832,21 +854,75 @@
     let currentPin = '';
 
     // AUTH / PIN FUNCTIONS
+    function syncPinDisplay() {
+      const display = document.getElementById('pinDisplay');
+      if (display) display.value = currentPin;
+      document.getElementById('pinError').textContent = '';
+    }
+
     function pressPin(num) {
       if (currentPin.length < 4) {
         currentPin += num;
-        document.getElementById('pinDisplay').value = currentPin;
-        document.getElementById('pinError').textContent = '';
+        syncPinDisplay();
         if (currentPin.length === 4) {
           setTimeout(submitPin, 200);
         }
       }
     }
 
+    function deletePin() {
+      if (currentPin.length > 0) {
+        currentPin = currentPin.slice(0, -1);
+        syncPinDisplay();
+      }
+    }
+
     function clearPin() {
       currentPin = '';
-      document.getElementById('pinDisplay').value = '';
-      document.getElementById('pinError').textContent = '';
+      syncPinDisplay();
+    }
+
+    function setupPinKeyboardListener() {
+      const pinInput = document.getElementById('pinDisplay');
+      if (pinInput) {
+        // Mendukung ketik langsung di kolom input dengan keyboard PC/laptop
+        pinInput.addEventListener('input', function() {
+          currentPin = this.value.replace(/\D/g, '').slice(0, 4);
+          this.value = currentPin;
+          document.getElementById('pinError').textContent = '';
+          if (currentPin.length === 4) {
+            setTimeout(submitPin, 200);
+          }
+        });
+
+        pinInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submitPin();
+          }
+        });
+      }
+
+      // Mendukung ketik keyboard global saat modal PIN kasir muncul
+      document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('cashierAuthModal');
+        if (!modal || modal.style.display === 'none') return;
+
+        // Jika input sudah difokuskan, biarkan event native input menanganinya
+        if (document.activeElement === pinInput) return;
+
+        if (e.key >= '0' && e.key <= '9') {
+          pressPin(e.key);
+        } else if (e.key === 'Backspace') {
+          e.preventDefault();
+          deletePin();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          submitPin();
+        } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+          clearPin();
+        }
+      });
     }
 
     async function submitPin() {
@@ -873,6 +949,8 @@
         } else {
           document.getElementById('pinError').textContent = data.message || 'PIN Salah.';
           clearPin();
+          const input = document.getElementById('pinDisplay');
+          if (input) input.focus();
         }
       } catch (e) {
         // Fallback demo lokal jika offline
@@ -883,8 +961,10 @@
           document.getElementById('cashierUserLabel').style.background = '#12b76a';
           loadKasirOrders();
         } else {
-          document.getElementById('pinError').textContent = 'PIN Salah. Coba: 1234';
+          document.getElementById('pinError').textContent = 'PIN Salah. Coba demo PIN: 1234';
           clearPin();
+          const input = document.getElementById('pinDisplay');
+          if (input) input.focus();
         }
       }
     }
@@ -899,6 +979,10 @@
         loadKasirOrders();
       } else {
         document.getElementById('cashierAuthModal').style.display = 'grid';
+        setTimeout(() => {
+          const input = document.getElementById('pinDisplay');
+          if (input) input.focus();
+        }, 150);
       }
     }
 
@@ -1481,6 +1565,7 @@
     setInterval(loadKasirOrders, 10000);
     document.addEventListener('DOMContentLoaded', () => {
       initHistoryDateInput();
+      setupPinKeyboardListener();
       checkCashierSession();
     });
   </script>
